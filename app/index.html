@@ -291,25 +291,111 @@ function renderDetail(){
 }
 
 /* ---------- 原稿チェック ---------- */
-const ALIAS={ // 命題 ID → 手で足した言い換え（名前から自動で作れないもの）
- 1:['三平方','ピタゴラス','pythagoras'],2:['素数','素数の無限','primes','prime'],3:['無理数','√2','sqrt2'],
- 6:['ユークリッドの補題','euclid'],7:['算術の基本定理','素因数分解','fundamental theorem of arithmetic'],
- 8:['正規表現','オートマトン','regex','regular expression'],13:['整列','比較ソート','comparison sort'],
- 14:['四色','four color'],16:['ポアンカレ','poincare'],20:['ヴェイユ','weil'],
- 21:['ケプラー','球充填','kepler','sphere packing'],22:['E8','エイト'],23:['リーチ格子','leech'],
- 24:['ジョルダン','jordan'],44:['セメレディ','szemeredi','等差数列'],49:['幾何化','geometrization','素分解'],
- 62:['ETH','指数時間仮説','exponential time hypothesis'],72:['ヤン＝ミルズ','yang','質量ギャップ','mass gap'],
- 77:['P≠NP','P vs NP','SAT'],82:['オイラー定数','euler constant','γ']
+const ALIAS={
+ 1:['三平方','ピタゴラス','pythagoras'],
+ 2:['素数無限','素数の無限','無限に存在する素数','primes are infinite'],
+ 3:['√2','ルート2','無理数','irrational'],
+ 6:['ユークリッドの補題','euclid'],
+ 7:['算術の基本定理','素因数分解の一意性','fundamental theorem of arithmetic'],
+ 8:['正規表現','オートマトン','regex','regular expression'],
+ 9:['AKS','素数判定'],
+ 10:['線形計画','linear programming'],
+ 11:['平方剰余','相互法則','quadratic reciprocity'],
+ 12:['ガウス・ボネ','gauss-bonnet'],
+ 13:['整列','比較ソート','comparison sort','情報論的下界'],
+ 14:['四色','four color'],
+ 15:['有限単純群','CFSG','単純群の分類'],
+ 16:['ポアンカレ','poincare'],
+ 17:['ヤマベ','yamabe'],
+ 18:['調和写像','harmonic map','イールズ','eells'],
+ 19:['ウィルモア','willmore'],
+ 20:['ヴェイユ予想','weil'],
+ 21:['ケプラー','球充填','kepler','sphere packing','π/√18'],
+ 22:['E8','エイト','8次元の球充填','8次元','π⁴/384'],
+ 23:['リーチ格子','leech','24次元の球充填','24次元','π¹²'],
+ 24:['ジョルダン曲線','jordan curve'],
+ 25:['シャーンフリース','schoenflies'],
+ 26:['モーデル・ヴェイユ','mordell-weil'],
+ 27:['ディリクレ','算術級数','dirichlet'],
+ 28:['e の超越性','ネイピア数','transcendence of e'],
+ 29:['π の超越性','円周率の超越性','transcendence of pi'],
+ 30:['カタラン','catalan'],
+ 31:['ファン・デル・ヴァールデン','van der waerden','vdw'],
+ 32:['ラムゼー','ramsey'],
+ 33:['ゲーデル','不完全性','incompleteness'],
+ 34:['タルスキ','tarski','定義不可能'],
+ 35:['ホッジ','hodge'],
+ 36:['BSD','バーチ','スウィナートン','birch'],
+ 37:['ヤコビアン','jacobian'],
+ 38:['バーチ・テイト','birch-tate'],
+ 39:['フェルマーの最終定理','フェルマー','FLT','fermat'],
+ 40:['素数定理','PNT','prime number theorem'],
+ 41:['保型性','modularity','谷山','taniyama'],
+ 42:['モーデル予想','ファルティングス','faltings'],
+ 43:['グリーン・タオ','green-tao','green–tao'],
+ 44:['セメレディ','szemeredi','szemerédi'],
+ 45:['グラフマイナー','graph minor'],
+ 46:['ディスクレパンシー','discrepancy','エルデシュ'],
+ 47:['カラビ','calabi'],
+ 48:['ファイト・トンプソン','feith','feit-thompson'],
+ 49:['幾何化','geometrization','素分解'],
+ 50:['ムーンシャイン','moonshine'],
+ 51:['アティヤ','atiyah','指数定理','index theorem'],
+ 52:['ヒルベルト第5','ヒルベルトの第5'],
+ 53:['ナッシュ','nash'],
+ 54:['ド・ジョルジ','de giorgi','ヒルベルト第19'],
+ 55:['カルレソン','carleson','ルジン','lusin'],
+ 56:['極小曲面','最小曲面','minimal surface'],
+ 57:['張益唐','zhang','有界間隔'],
+ 58:['abc 予想','abc予想','abc conjecture'],
+ 59:['P≠NP','P vs NP','P≠NP 問題'],
+ 60:['BPP'],
+ 61:['UGC','unique games'],
+ 62:['ETH','指数時間仮説','exponential time hypothesis'],
+ 63:['一般シャーンフリース','4次元','4 次元'],
+ 64:['コロモゴロフ','kolmogorov'],
+ 65:['特異点解消','resolution of singularities','広中','hironaka'],
+ 66:['バーンサイド','burnside'],
+ 67:['制限バーンサイド','restricted burnside'],
+ 68:['ケルヴェア','kervaire'],
+ 69:['双子素数','twin prime'],
+ 70:['ゴールドバッハ','goldbach'],
+ 71:['コラッツ','collatz'],
+ 72:['ヤン＝ミルズ','ヤン・ミルズ','yang-mills','質量ギャップ','mass gap'],
+ 73:['正標数','標数 p','標数p'],
+ 74:['連続体仮説','CH','continuum hypothesis'],
+ 75:['Goodstein','グッドスタイン'],
+ 76:['Paris-Harrington','Paris–Harrington','パリス','ハリントン'],
+ 77:['S₂¹','S21','有界算術'],
+ 78:['リーマン','RH','riemann'],
+ 79:['ナビエ','navier','stokes','流体'],
+ 80:['オイラー方程式','euler equation'],
+ 81:['エルデシュ・シュトラウス','erdos-straus','Erdős–Straus'],
+ 82:['オイラー定数','euler constant','γ の無理数性']
 };
-const CAL_ALIAS={C1:['goodstein','グッドスタイン'],C2:['paris','harrington','パリス','ハリントン','PH 定理'],
- C3:['hydra','ヒドラ','カービー','kirby'],C4:['弱い goodstein','process 1'],C5:['塔','tetration'],
- C6:['hydra 高さ','battle 長'],C7:['kruskal','クラスカル','木埋め込み'],C8:['friedman','フリードマン','FFF'],
- N1:['con(pa)','無矛盾'],N2:['iopen','シェファードソン','shepherdson']};
+const CAL_ALIAS={
+ C1:['goodstein','グッドスタイン'],
+ C2:['paris','harrington','パリス','ハリントン','PH 定理'],
+ C3:['hydra','ヒドラ','カービー','kirby'],
+ C4:['弱い goodstein','process 1','基数表示'],
+ C5:['塔','tetration','n^{n^n}'],
+ C6:['hydra 高さ','battle 長'],
+ C7:['kruskal','クラスカル','木埋め込み'],
+ C8:['friedman','フリードマン','FFF'],
+ N1:['con(pa)','無矛盾','証明不可能'],
+ N2:['iopen','シェファードソン','shepherdson']
+};
+function norm(s){
+  return s.toLowerCase()
+    .replace(/[Ａ-Ｚａ-ｚ０-９]/g,c=>String.fromCharCode(c.charCodeAt(0)-0xFEE0))
+    .replace(/[・･]/g,'').replace(/[＝]/g,'=').replace(/[－ー―–—]/g,'-')
+    .replace(/\s+/g,'');
+}
 function indexOfRows(){
   const items=[];
   const push=(r,aliases,src)=>{
-    const base=[r.name.replace(/の定理|予想|問題|定理/g,''), ...(aliases||[])];
-    items.push({r,terms:base.filter(s=>s&&s.length>=2).map(s=>s.toLowerCase()),src});
+    const base=[r.name.replace(/の定理$/,'').replace(/定理$/,'').replace(/予想$/,'').replace(/問題$/,''), ...(aliases||[])];
+    items.push({r,terms:base.filter(s=>s&&String(s).trim().length>=2),src});
   };
   const A2={}; Object.entries(ALIAS).forEach(([k,v])=>A2[k]=v);
   RAW.filter(r=>!r.isCal).forEach(r=>push(r,A2[r.id]||[],'row'));
@@ -321,17 +407,23 @@ function analyse(text){
   const lines=text.split(/[。．\n]/).map(s=>s.trim()).filter(s=>s.length>=6);
   const out=[];
   for(const line of lines){
-    const low=line.toLowerCase();
+    const low=norm(line);
     const hits=[];
     for(const it of IDX){
       let score=0, hitTerm=null;
       for(const t of it.terms){
-        if(t.length>=2 && low.includes(t)){ const s=t.length>=4?3:(t.length===3?2:1); if(s>score){score=s;hitTerm=t;} }
+        const tt=norm(t);
+        if(tt.length<2) continue;
+        // 短い英字の別名（CH・RH・P など）は語の境界でだけ当てる
+        let ok;
+        if(tt.length<=3 && /^[a-z0-9]+$/.test(tt)) ok=new RegExp('(?<![a-z0-9])'+tt+'(?![a-z0-9])').test(low);
+        else ok=low.includes(tt);
+        if(ok){ const s=Math.min(tt.length,10); if(s>score){score=s;hitTerm=t;} }
       }
       // 式の断片（∀ 〜 ∃ を含む 8 文字以上）が一致したら加点
-      const frag=(it.r.prenex||'').replace(/\s+/g,'');
+      const frag=norm(it.r.prenex||'');
       if(frag.length>=12){
-        for(let i=0;i+12<=frag.length;i+=6){ if(low.replace(/\s+/g,'').includes(frag.slice(i,i+12))){score=Math.max(score,2);hitTerm=hitTerm||'式';break} }
+        for(let i=0;i+12<=frag.length;i+=6){ if(low.includes(frag.slice(i,i+12))){score=Math.max(score,2);hitTerm=hitTerm||'式';break} }
       }
       if(score>0) hits.push({r:it.r,score,term:hitTerm});
     }
