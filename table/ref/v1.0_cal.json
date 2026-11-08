@@ -1,0 +1,438 @@
+{
+ "table": "校正表",
+ "rows": [
+  {
+   "num": "C1",
+   "name": "Goodstein の定理（全 m）",
+   "a": "[PA, PA+TI(ε₀)]",
+   "a_lo": 7,
+   "a_up": 9,
+   "b": "[F_ε₀, F_ε₀]（非PR/非PR）",
+   "b_known": true,
+   "b_lo": 7,
+   "b_up": 7,
+   "method": "増え方を使う",
+   "confirmed": true,
+   "natural": true
+  },
+  {
+   "num": "C2",
+   "name": "Paris–Harrington の定理",
+   "a": "[PA, PA+1-Con(PA)]",
+   "a_lo": 7,
+   "a_up": 8,
+   "b": "[F_ε₀, F_ε₀]（非PR/非PR）",
+   "b_known": true,
+   "b_lo": 7,
+   "b_up": 7,
+   "method": "使わない",
+   "confirmed": true,
+   "natural": true
+  },
+  {
+   "num": "C3",
+   "name": "Kirby–Paris の hydra",
+   "a": "[PA, PA+TI(ε₀)]",
+   "a_lo": 7,
+   "a_up": 9,
+   "b": "[F_ε₀, F_ε₀]（非PR/非PR）",
+   "b_known": true,
+   "b_lo": 7,
+   "b_up": 7,
+   "method": "増え方を使う",
+   "confirmed": true,
+   "natural": true
+  },
+  {
+   "num": "C4",
+   "name": "弱い Goodstein（Process 1、通常の基数表示）",
+   "a": "[PRA, PA]",
+   "a_lo": 4,
+   "a_up": 6,
+   "b": "[F_ω, F_ω]（非PR/非PR）",
+   "b_known": true,
+   "b_lo": 4,
+   "b_up": 4,
+   "method": "増え方を使う",
+   "confirmed": true,
+   "natural": true
+  },
+  {
+   "num": "C5",
+   "name": "Goodstein（塔に制限: m < n^{n^n}、KP Thm 1' の k=2）",
+   "a": "[IΣ_2, IΣ_3]",
+   "a_lo": 5,
+   "a_up": 5,
+   "b": "[F_ω^ω, F_ω^ω]（非PR/非PR）",
+   "b_known": true,
+   "b_lo": 5,
+   "b_up": 5,
+   "method": "増え方を使う",
+   "confirmed": true,
+   "natural": true
+  },
+  {
+   "num": "C6",
+   "name": "hydra（高さ 3 に固定）",
+   "a": "[IΣ_2, IΣ_3]",
+   "a_lo": 5,
+   "a_up": 5,
+   "b": "[—, F_ω^ω]（—/非PR）",
+   "b_known": true,
+   "b_lo": -1000000,
+   "b_up": 5,
+   "method": "増え方を使う",
+   "confirmed": true,
+   "natural": true
+  },
+  {
+   "num": "C7",
+   "name": "グラフマイナー定理の有限形",
+   "a": "[Π¹₁-CA₀, ZFC]",
+   "a_lo": 12,
+   "a_up": 12,
+   "b": "[—, —]（—/—）",
+   "b_known": false,
+   "b_lo": -1000000,
+   "b_up": 1000000,
+   "method": "未確認",
+   "confirmed": false,
+   "natural": true
+  },
+  {
+   "num": "C8",
+   "name": "Kruskal の定理の有限形",
+   "a": "[ATR₀, ZFC]",
+   "a_lo": 11,
+   "a_up": 12,
+   "b": "[—, —]（—/—）",
+   "b_known": false,
+   "b_lo": -1000000,
+   "b_up": 1000000,
+   "method": "未確認",
+   "confirmed": false,
+   "natural": true
+  },
+  {
+   "num": "N1",
+   "name": "∀x∃y (y=0 ∧ ¬Prf_PA(x,⌜⊥⌝))",
+   "a": "[PA, PA+Con(PA)]",
+   "a_lo": 7,
+   "a_up": 7,
+   "b": "[F_0, F_0]（E¹/E¹）",
+   "b_known": true,
+   "b_lo": 0,
+   "b_up": 0,
+   "method": "使わない",
+   "confirmed": true,
+   "natural": false
+  },
+  {
+   "num": "N2",
+   "name": "#2（素数無限）と IOpen",
+   "a": "[IOpen, EFA]",
+   "a_lo": 1,
+   "a_up": 2,
+   "b": "[F_0, F_1]（E¹/E¹）",
+   "b_known": true,
+   "b_lo": 0,
+   "b_up": 1,
+   "method": "使わない",
+   "confirmed": true,
+   "natural": false
+  }
+ ],
+ "C": 14,
+ "D": 2,
+ "comparable": 16,
+ "incomparable": 29,
+ "incomparable_a": 10,
+ "incomparable_b": 19,
+ "pairs": [
+  {
+   "i": "C1",
+   "j": "C2",
+   "verdict": "比較不能(a) Aが重なる"
+  },
+  {
+   "i": "C1",
+   "j": "C3",
+   "verdict": "比較不能(a) Aが重なる"
+  },
+  {
+   "i": "C4",
+   "j": "C1",
+   "verdict": "一致"
+  },
+  {
+   "i": "C5",
+   "j": "C1",
+   "verdict": "一致"
+  },
+  {
+   "i": "C6",
+   "j": "C1",
+   "verdict": "一致"
+  },
+  {
+   "i": "C1",
+   "j": "C7",
+   "verdict": "比較不能(b) Aが分離しBが重なる/未取得"
+  },
+  {
+   "i": "C1",
+   "j": "C8",
+   "verdict": "比較不能(b) Aが分離しBが重なる/未取得"
+  },
+  {
+   "i": "C1",
+   "j": "N1",
+   "verdict": "比較不能(a) Aが重なる"
+  },
+  {
+   "i": "N2",
+   "j": "C1",
+   "verdict": "一致"
+  },
+  {
+   "i": "C2",
+   "j": "C3",
+   "verdict": "比較不能(a) Aが重なる"
+  },
+  {
+   "i": "C4",
+   "j": "C2",
+   "verdict": "一致"
+  },
+  {
+   "i": "C5",
+   "j": "C2",
+   "verdict": "一致"
+  },
+  {
+   "i": "C6",
+   "j": "C2",
+   "verdict": "一致"
+  },
+  {
+   "i": "C2",
+   "j": "C7",
+   "verdict": "比較不能(b) Aが分離しBが重なる/未取得"
+  },
+  {
+   "i": "C2",
+   "j": "C8",
+   "verdict": "比較不能(b) Aが分離しBが重なる/未取得"
+  },
+  {
+   "i": "C2",
+   "j": "N1",
+   "verdict": "比較不能(a) Aが重なる"
+  },
+  {
+   "i": "N2",
+   "j": "C2",
+   "verdict": "一致"
+  },
+  {
+   "i": "C4",
+   "j": "C3",
+   "verdict": "一致"
+  },
+  {
+   "i": "C5",
+   "j": "C3",
+   "verdict": "一致"
+  },
+  {
+   "i": "C6",
+   "j": "C3",
+   "verdict": "一致"
+  },
+  {
+   "i": "C3",
+   "j": "C7",
+   "verdict": "比較不能(b) Aが分離しBが重なる/未取得"
+  },
+  {
+   "i": "C3",
+   "j": "C8",
+   "verdict": "比較不能(b) Aが分離しBが重なる/未取得"
+  },
+  {
+   "i": "C3",
+   "j": "N1",
+   "verdict": "比較不能(a) Aが重なる"
+  },
+  {
+   "i": "N2",
+   "j": "C3",
+   "verdict": "一致"
+  },
+  {
+   "i": "C4",
+   "j": "C5",
+   "verdict": "比較不能(a) Aが重なる"
+  },
+  {
+   "i": "C4",
+   "j": "C6",
+   "verdict": "比較不能(a) Aが重なる"
+  },
+  {
+   "i": "C4",
+   "j": "C7",
+   "verdict": "比較不能(b) Aが分離しBが重なる/未取得"
+  },
+  {
+   "i": "C4",
+   "j": "C8",
+   "verdict": "比較不能(b) Aが分離しBが重なる/未取得"
+  },
+  {
+   "i": "C4",
+   "j": "N1",
+   "verdict": "逆順"
+  },
+  {
+   "i": "N2",
+   "j": "C4",
+   "verdict": "一致"
+  },
+  {
+   "i": "C5",
+   "j": "C6",
+   "verdict": "比較不能(a) Aが重なる"
+  },
+  {
+   "i": "C5",
+   "j": "C7",
+   "verdict": "比較不能(b) Aが分離しBが重なる/未取得"
+  },
+  {
+   "i": "C5",
+   "j": "C8",
+   "verdict": "比較不能(b) Aが分離しBが重なる/未取得"
+  },
+  {
+   "i": "C5",
+   "j": "N1",
+   "verdict": "逆順"
+  },
+  {
+   "i": "N2",
+   "j": "C5",
+   "verdict": "一致"
+  },
+  {
+   "i": "C6",
+   "j": "C7",
+   "verdict": "比較不能(b) Aが分離しBが重なる/未取得"
+  },
+  {
+   "i": "C6",
+   "j": "C8",
+   "verdict": "比較不能(b) Aが分離しBが重なる/未取得"
+  },
+  {
+   "i": "C6",
+   "j": "N1",
+   "verdict": "比較不能(b) Aが分離しBが重なる/未取得"
+  },
+  {
+   "i": "N2",
+   "j": "C6",
+   "verdict": "比較不能(b) Aが分離しBが重なる/未取得"
+  },
+  {
+   "i": "C7",
+   "j": "C8",
+   "verdict": "比較不能(a) Aが重なる"
+  },
+  {
+   "i": "N1",
+   "j": "C7",
+   "verdict": "比較不能(b) Aが分離しBが重なる/未取得"
+  },
+  {
+   "i": "N2",
+   "j": "C7",
+   "verdict": "比較不能(b) Aが分離しBが重なる/未取得"
+  },
+  {
+   "i": "N1",
+   "j": "C8",
+   "verdict": "比較不能(b) Aが分離しBが重なる/未取得"
+  },
+  {
+   "i": "N2",
+   "j": "C8",
+   "verdict": "比較不能(b) Aが分離しBが重なる/未取得"
+  },
+  {
+   "i": "N2",
+   "j": "N1",
+   "verdict": "比較不能(b) Aが分離しBが重なる/未取得"
+  }
+ ],
+ "violations": [],
+ "bad_intervals": [],
+ "d5_statements": 1,
+ "d5_list": [
+  "C2"
+ ],
+ "d5_note": "判定: 「j の軸A 下界に、増え方の下界を使わない公刊の証明があり、それを本文で確認したか」。82行の表では #76 のみ該当（Paris–Harrington 1977 の §2。増え方は §3.2 で系として出る）。#75 は Kirby–Paris 1982 の証明が Ketonen–Solovay の indicator を使うため数えない。",
+ "d6": 8,
+ "d5_rows": {
+  "C1": [
+   "増え方を使う",
+   "下界: Kirby–Paris 1982, Thm 1(ii)（本文で確認）。上界: 同論文の注（本文）: h-Goodstein 列の停止は TI(ε₀) と同値で、固定 base はその特別の場合"
+  ],
+  "C2": [
+   "使わない",
+   "下界: Paris–Harrington 1977, §2（本文 OCR で確認）: Con(T)→Con(PA) と 1.2→Con(T)。上界: PA+1-Con(PA)（監査 v7.1 で訂正。PH は PA 上で 1-Con(PA) と同値。PA+Con(PA) は PA と同じ全域関数しか持たないので PH を証明しない）"
+  ],
+  "C3": [
+   "増え方を使う",
+   "下界: Kirby–Paris 1982, Thm 2(ii)（本文で確認）。上界: 同 Thm 2(i) の ordinal 割当（TI(ε₀)）"
+  ],
+  "C4": [
+   "増え方を使う",
+   "下界: Cichoń 1983, Thm 1（本文で確認）: PRA では証明できない。上界: PA（監査 v7.1 で訂正。停止は TI(ω^ω) から出て、PA は ε₀ 未満の TI を証明する）。v8: IΣ_2 まで下げる出典は見つからなかった（IΣ_2 の全域関数の水準と TI(ω^ω) の関係を示す文献を特定できず）"
+  ],
+  "C5": [
+   "増え方を使う",
+   "Kirby–Paris 1982, Thm 1'（本文で確認）: (ii) IΣ_k は n が k+1 回の塔の場合を証明しない、(i) IΣ_k は n が k 回の塔（の上に p）の場合を証明する。n が3回の塔なので、k=2 で下界、k=3（p=1）で上界（監査 v8.1: v7・v8 の「塔の高さ2」と m<n↑↑↑2・m<n^n は、この A と別の命題だった）"
+  ],
+  "C6": [
+   "増え方を使う",
+   "下界: Kirby–Paris 1982, Thm 2 の後の注（本文の末尾）: 高さ k+1 の hydra では IΣ_k で証明できない。k=2 の行。上界 IΣ_3: 本文に記述なし（IΣ_n が ω_{n+1} 未満の TI を証明するという標準的事実から。要出典）"
+  ],
+  "C7": [
+   "未確認",
+   "Friedman–Robertson–Seymour 1987（文献はあるが本文未取得）: Π¹₁-CA₀ では証明できない"
+  ],
+  "C8": [
+   "未確認",
+   "Friedman（文献はあるが本文未取得）: ATR₀ では証明できない"
+  ]
+ },
+ "pairs_natural": 9,
+ "bad_b_values": [],
+ "order_a": [
+  "IOpen",
+  "IΔ₀",
+  "EFA",
+  "PRA",
+  "IΣ_2",
+  "IΣ_3",
+  "PA",
+  "PA+Con(PA)",
+  "PA+1-Con(PA)",
+  "PA+TI(ε₀)",
+  "ATR₀",
+  "Π¹₁-CA₀",
+  "ZFC"
+ ],
+ "viol_ge_boundary": []
+}

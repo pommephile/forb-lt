@@ -1,0 +1,155 @@
+{
+ "table": "82行の表",
+ "rows": [
+  {
+   "num": 2,
+   "name": "素数無限",
+   "a": "[—, EFA]",
+   "a_lo": -1000000,
+   "a_up": 2.0,
+   "b": "[F_0, F_1]（E¹/E¹）",
+   "b_known": true,
+   "b_lo": 0,
+   "b_up": 1
+  },
+  {
+   "num": 31,
+   "name": "van der Waerdenの定理",
+   "a": "[—, PRA]",
+   "a_lo": -1000000,
+   "a_up": 3.0,
+   "b": "[F_2, F_3]（E³/E³）",
+   "b_known": true,
+   "b_lo": 2,
+   "b_up": 3
+  },
+  {
+   "num": 32,
+   "name": "Ramseyの定理",
+   "a": "[—, EFA]",
+   "a_lo": -1000000,
+   "a_up": 2.0,
+   "b": "[F_2, F_2]（E³/E³）",
+   "b_known": true,
+   "b_lo": 2,
+   "b_up": 2
+  },
+  {
+   "num": 75,
+   "name": "Goodsteinの定理",
+   "a": "[PA, PA+TI(ε₀)]",
+   "a_lo": 9.0,
+   "a_up": 9.5,
+   "b": "[F_ε₀, F_ε₀]（非PR/非PR）",
+   "b_known": true,
+   "b_lo": 5,
+   "b_up": 5
+  },
+  {
+   "num": 76,
+   "name": "Paris-Harrington定理",
+   "a": "[PA, PA+1-Con(PA)]",
+   "a_lo": 9.0,
+   "a_up": 9.5,
+   "b": "[F_ε₀, F_ε₀]（非PR/非PR）",
+   "b_known": true,
+   "b_lo": 5,
+   "b_up": 5
+  }
+ ],
+ "C": 6,
+ "D": 0,
+ "comparable": 6,
+ "incomparable": 4,
+ "incomparable_a": 4,
+ "incomparable_b": 0,
+ "pairs": [
+  {
+   "i": 2,
+   "j": 31,
+   "verdict": "比較不能(a) Aが重なる"
+  },
+  {
+   "i": 2,
+   "j": 32,
+   "verdict": "比較不能(a) Aが重なる"
+  },
+  {
+   "i": 2,
+   "j": 75,
+   "verdict": "一致"
+  },
+  {
+   "i": 2,
+   "j": 76,
+   "verdict": "一致"
+  },
+  {
+   "i": 31,
+   "j": 32,
+   "verdict": "比較不能(a) Aが重なる"
+  },
+  {
+   "i": 31,
+   "j": 75,
+   "verdict": "一致"
+  },
+  {
+   "i": 31,
+   "j": 76,
+   "verdict": "一致"
+  },
+  {
+   "i": 32,
+   "j": 75,
+   "verdict": "一致"
+  },
+  {
+   "i": 32,
+   "j": 76,
+   "verdict": "一致"
+  },
+  {
+   "i": 75,
+   "j": 76,
+   "verdict": "比較不能(a) Aが重なる"
+  }
+ ],
+ "violations": [],
+ "bad_intervals": [],
+ "d5_statements": 1,
+ "d5_list": [
+  76
+ ],
+ "d5_note": "判定: 「j の軸A 下界に、増え方の下界を使わない公刊の証明があり、それを本文で確認したか」。82行の表では #76 のみ該当（Paris–Harrington 1977 の §2。増え方は §3.2 で系として出る）。#75 は Kirby–Paris 1982 の証明が Ketonen–Solovay の indicator を使うため数えない。",
+ "d6": 5,
+ "d5_rows": {
+  "75": [
+   "増え方",
+   "Kirby–Paris 1982, Thm 1(ii) の証明は Ketonen–Solovay の indicator（α-large 集合）を使う（本文で確認）"
+  ],
+  "76": [
+   "別",
+   "Paris–Harrington 1977, §2: Con(T)→Con(PA) と「1.2 が Con(T) を含意」。増え方は §3.2 で系として出るだけ（本文 OCR で確認）"
+  ]
+ },
+ "pairs_natural": null,
+ "bad_b_values": [],
+ "order_a": [
+  "IOpen",
+  "IΔ₀",
+  "EFA",
+  "PRA",
+  "RCA₀",
+  "WKL₀",
+  "IΣ_n",
+  "ACA₀",
+  "PA",
+  "PA独立",
+  "ATR₀",
+  "Π¹₁-CA₀",
+  "ZFC",
+  "ZFC独立"
+ ],
+ "viol_ge_boundary": []
+}

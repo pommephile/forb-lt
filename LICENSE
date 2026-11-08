@@ -1,0 +1,43 @@
+Forb-LT — 複合ライセンス / dual license
+=====================================
+
+このリポジトリは 2 つのライセンスを併用します。
+
+1. 文書・表・データ — CC BY 4.0
+   table/ の一覧表と校正表、note/ の小論、audit/ の査読記録、README 等の文書は
+   Creative Commons Attribution 4.0 International (CC BY 4.0) の下で提供されます。
+   全文: https://creativecommons.org/licenses/by/4.0/legalcode
+   表示（attribution）は上記の引用形式で足ります。
+
+2. コード — MIT
+   app/ 以下のファイル、および table/ の *.py / *.sh は MIT License の下で提供されます。
+   以下がその全文です。
+
+----------------------------------------------------------------------
+MIT License
+
+Copyright (c) 2026 Shin Uota
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+----------------------------------------------------------------------
+
+3. 第三者に帰属するもの
+   表に引用した定義・定理の文、命題の名称、書誌情報は、それぞれの著作者・出版者の
+   著作権に服します。CC BY 4.0 も MIT も、これらの引用部分について新たな権利を
+   与えるものではありません。一次資料の PDF・OCR テキストは同梱していません。

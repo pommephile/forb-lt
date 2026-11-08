@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+title: "Forb-LT: proof-theoretic strength, arithmetic hierarchy, and growth of witnesses for 82 propositions"
+message: "If you use this table, cite it as below."
+type: dataset
+authors:
+  - family-names: "Uota"
+    given-names: "Shin"
+version: "1.8"
+date-released: "2026-11-06"
+license: "CC-BY-4.0"
