@@ -1,5 +1,7 @@
 # Forb-LT — 命題ごとの証明論的強さ・算術の階層・証人の増え方
 
+**[English](README.en.md)** ／ ブラウザ版: <https://pommephile.github.io/forb-lt/>
+
 82 の命題について、**既知の結果**を 3 つの軸で整理した一覧表です。
 
 | 軸 | 何を書いているか |
