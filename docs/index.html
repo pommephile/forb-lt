@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>命題データベース — Forb-LT 1.8</title>
+<style>
+:root{--ink:#14171a;--soft:#3c4248;--muted:#6b7280;--line:#e3e5e9;--line2:#eef0f3;
+ --bg:#fbfbfc;--panel:#fff;--accent:#0e5a63;--accent2:#e9f1f2;--flag:#f4f4f6;--warnbg:#fdf7ef;--warnln:#c8892b}
+*{box-sizing:border-box}html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.6 -apple-system,"Hiragino Sans","Hiragino Kaku Gothic ProN",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{display:flex;flex-direction:column;height:100vh}
+header{padding:14px 22px 0;border-bottom:1px solid var(--line);background:var(--panel)}
+.top{display:flex;align-items:baseline;gap:14px}
+h1{margin:0;font:600 18px/1.3 "Hiragino Mincho ProN","YuMincho",serif;letter-spacing:.02em}
+nav{display:flex;gap:2px;margin-left:18px}
+nav button{border:0;background:none;padding:8px 12px;font-size:13px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent}
+nav button.on{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+.lang{margin-left:auto;border:1px solid var(--line);background:#fff;border-radius:6px;padding:3px 9px;font-size:11.5px;color:var(--soft);cursor:pointer}
+.sub{padding:6px 0 10px;color:var(--muted);font-size:11.5px;display:flex;gap:14px;flex-wrap:wrap}
+.sub code{font:11px/1 ui-monospace,Menlo,monospace;color:var(--soft)}
+.toolbar{display:flex;gap:10px;align-items:center;padding:10px 22px;border-bottom:1px solid var(--line);background:var(--panel);flex-wrap:wrap}
+#q{flex:1 1 240px;min-width:180px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;background:#fcfcfd;outline:none}
+#q:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px var(--accent2)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:#fff;color:var(--soft);border-radius:999px;padding:3px 10px;font-size:12px;cursor:pointer;user-select:none}
+.chip:hover{border-color:#c9ced6}.chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.spacer{flex:1}.count{color:var(--muted);font-size:12px;white-space:nowrap}
+main{flex:1;display:grid;grid-template-columns:390px 1fr;min-height:0}
+#list{overflow:auto;border-right:1px solid var(--line);background:var(--panel)}
+.item{padding:10px 16px;border-bottom:1px solid var(--line2);cursor:pointer;display:flex;gap:10px;align-items:baseline}
+.item:hover{background:#f7f9fa}.item.sel{background:var(--accent2);border-left:3px solid var(--accent);padding-left:13px}
+.item .n{font:11px/1.4 ui-monospace,Menlo,monospace;color:var(--muted);min-width:24px;text-align:right}
+.item .nm{font-family:"Hiragino Mincho ProN","YuMincho",serif;font-size:14px;line-height:1.35}
+.item .meta{margin-top:3px;font-size:11px;color:var(--muted);display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.badge{display:inline-block;padding:1px 6px;border-radius:4px;background:var(--flag);font:11px/1.7 ui-monospace,Menlo,monospace;color:var(--soft)}
+.ival{font:11px/1.7 ui-monospace,Menlo,monospace;color:var(--soft)}
+.kind{font-size:11px;padding:1px 6px;border-radius:4px}
+.kind.k-both,.kind.k-exact{background:#eef6f2;color:#1d6b4f}
+.kind.k-upper,.kind.k-lower{background:#f3f5f7;color:#4a5560}
+#detail{overflow:auto;padding:24px 34px 60px}
+.h{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.h .num{font:12px/1 ui-monospace,Menlo,monospace;color:var(--muted)}
+.h h2{margin:0;font:600 23px/1.35 "Hiragino Mincho ProN","YuMincho",serif}
+.tags{margin:9px 0 20px;display:flex;gap:8px;flex-wrap:wrap}
+.tag{font:12px/1.6 ui-monospace,Menlo,monospace;padding:2px 8px;border:1px solid var(--line);border-radius:5px;color:var(--soft)}
+.tag.tier{border-color:#cfe0e2;background:#f2f8f9;color:#0b4b52}
+section{margin:0 0 20px}.k{font-size:11px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-bottom:7px}
+.formula{font:13px/1.8 "SFMono-Regular",Menlo,monospace;background:#f7f8f9;border:1px solid var(--line2);border-radius:8px;padding:12px 15px;white-space:pre-wrap;word-break:break-word;color:#20262b}
+.txt{font-size:13.4px;line-height:1.8;color:var(--soft)}
+.big{font:600 15.5px/1.7 "SFMono-Regular",Menlo,monospace}
+.note{border-left:3px solid var(--accent);background:#f5fafb;padding:10px 14px;border-radius:0 8px 8px 0;font-size:13.4px;line-height:1.7}
+.note b{color:var(--accent)}
+.warn{border-left:3px solid #9aa0a6;background:#f7f7f8;padding:10px 14px;border-radius:0 8px 8px 0;font-size:12.8px;line-height:1.7;color:var(--soft)}
+button.act{border:1px solid var(--line);background:#fff;border-radius:7px;padding:7px 12px;font-size:12.5px;cursor:pointer;color:var(--soft)}
+button.act:hover{border-color:var(--accent);color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.presets{padding:22px 26px;overflow:auto}
+.presets h3{margin:0 0 4px;font:600 15px/1.5 "Hiragino Mincho ProN",serif}
+.presets p.lead{margin:0 0 18px;color:var(--muted);font-size:12.5px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.pcard{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--panel);cursor:pointer;transition:.12s}
+.pcard:hover{border-color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.pcard .t{font-size:13.5px;font-weight:600}
+.pcard .d{font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.6}
+.pcard .c{font:12px/1.6 ui-monospace,Menlo,monospace;color:var(--accent);margin-top:6px}
+.checker{padding:22px 26px;overflow:auto;max-width:900px}
+#draft{width:100%;height:190px;padding:12px 14px;border:1px solid var(--line);border-radius:9px;font:13.5px/1.8 "Hiragino Mincho ProN",serif;resize:vertical;background:#fff;outline:none}
+#draft:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent2)}
+.row{display:flex;gap:10px;align-items:center;margin:10px 0 16px;flex-wrap:wrap}
+.hit{border:1px solid var(--line);border-radius:9px;padding:11px 14px;margin-bottom:9px;background:var(--panel)}
+.hit .lbl{font-size:11px;color:var(--muted)}
+.hit .quote{font-family:"Hiragino Mincho ProN",serif;font-size:13px;margin:4px 0 8px;padding-left:9px;border-left:2px solid var(--line)}
+.hit .who{font-size:13px;font-weight:600}
+.hit .why{font-size:12.5px;color:var(--soft);margin-top:5px;line-height:1.7}
+.hit .flag{display:inline-block;margin-top:7px;font-size:12px;padding:5px 10px;border-radius:6px;background:var(--warnbg);border:1px solid #ecd9b8;color:#7d5510}
+.hit .ok{display:inline-block;margin-top:7px;font-size:12px;padding:5px 10px;border-radius:6px;background:#eef6f2;color:#1d6b4f}
+.empty{padding:36px 20px;color:var(--muted);text-align:center;font-size:13px}
+footer{border-top:1px solid var(--line);padding:7px 22px;background:var(--panel);color:var(--muted);font-size:11.5px;display:flex;gap:16px;flex-wrap:wrap}
+kbd{font:11px/1 ui-monospace,Menlo,monospace;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:2px 5px;background:#fcfcfd}
+@media (max-width:900px){main{grid-template-columns:1fr;grid-template-rows:42vh 1fr}#list{border-right:none;border-bottom:1px solid var(--line)}#detail{padding:18px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="top">
+    <h1 id="apptitle">命題データベース</h1>
+    <nav>
+      <button data-view="list" class="on" id="nav-list">一覧</button>
+      <button data-view="presets" id="nav-presets">逆引き</button>
+      <button data-view="check" id="nav-check">原稿チェック</button>
+    </nav>
+    <button class="lang" id="lang">EN</button>
+  </div>
+  <div class="sub"><span id="sub1">Forb-LT 一覧表 1.8（公開版）・82 命題 ＋ 校正表 10 行</span>
+    <span id="sub2">値は文献の写し。新しい定理の主張ではない</span>
+    <span>sha256 <code id="sha"></code></span></div>
+</header>
+
+<div class="toolbar" id="bar">
+  <input id="q" autocomplete="off">
+  <div class="chips" id="tiers"></div>
+  <div class="chips" id="kinds"></div>
+  <div class="spacer"></div><span class="count" id="count"></span>
+</div>
+
+<main id="main-list">
+  <div id="list"></div>
+  <div id="detail"></div>
+</main>
+<main id="main-presets" style="display:none"><div class="presets" id="presets"></div></main>
+<main id="main-check" style="display:none"><div class="checker" id="checker"></div></main>
+
+<footer><span><kbd>/</kbd> <span id="f1">検索</span></span><span><kbd>↑</kbd><kbd>↓</kbd> <span id="f2">移動</span></span>
+  <span><kbd>c</kbd> <span id="f3">引用をコピー</span></span><span><kbd>Esc</kbd> <span id="f4">解除</span></span>
+  <span id="f5" style="margin-left:auto">版 1.8 / 2026-11-06</span></footer>
+</div>
+<script>
+const DATA = {"version": "1.8", "date": "2026-11-06", "sha256": "d0897555aa2adf3c200870c331cdb9946a3008a6812ae14b45ed8d6f43333710", "rows": [{"id": 1, "name": "三平方の定理", "tier": "実閉体", "prenex": "実閉体の一階命題（Tarski：決定可能）。算術の階層の外", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 2, "name": "素数無限", "tier": "Π₂", "prenex": "∀n ∃p>n Prime(p)", "pi1": "—", "A": "[—, EFA]", "A_src": "Paris–Wilkie–Woods, JSL 53 (1988)（IΔ₀+exp）", "b_fa": "[F_0, F_1]", "b_grz": "E¹/E¹", "b_src": "上界: Bertrand（n<p≤2n）／下界: 最小の証人は n+1 以上（線形）", "status": "記入済"}, {"id": 3, "name": "√2の無理性", "tier": "Π₁", "prenex": "∀p,q∈ℤ (q≠0 → p²≠2q²)", "pi1": "記述的（予測対象外）", "A": "[IOpen, IΔ₀]", "A_src": "Shepherdson (1964)：IOpen では不可", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 4, "name": "BOC Axiom A", "tier": "算術外", "prenex": "化学の規則であり数学の命題ではない", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 5, "name": "半導体DRCルール", "tier": "算術外", "prenex": "工学の規則であり数学の命題ではない", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 6, "name": "Euclidの補題", "tier": "Π₁", "prenex": "∀p,a,b (Prime(p)∧p|ab → p|a∨p|b)", "pi1": "記述的（予測対象外）", "A": "[—, IΔ₀]", "A_src": "Buss, Handbook of Proof Theory ch. II, p.90（本文）: IΔ₀ は「x が素数で x\\|ab なら x\\|a または x\\|b」を証明する（Δ₀ 最小化による Bezout）", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 7, "name": "算術の基本定理", "tier": "Π₁", "prenex": "∀n>1 ∃! 素因数分解（因子は n 以下に有界）", "pi1": "記述的（予測対象外）", "A": "[—, PRA]", "A_src": "Buss, Handbook of Proof Theory ch. II, p.90（本文）: 系列の符号化の後、IΔ₀ が算術の基本定理を証明する（IΣ₁ は十分）", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 8, "name": "正規表現の等価性", "tier": "Π₂", "prenex": "∀RE ∃DFA (L(DFA)=L(RE))（内側は文字列についての全称だが判定可能なので Π₂）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "[F_2, F_2]", "b_grz": "E³/E³", "b_src": "部分集合構成：最悪 2^n（上界・下界のため）", "status": "記入済"}, {"id": 9, "name": "素数判定 (AKS)", "tier": "Π₁", "prenex": "∀n (n 素数 ⟺ AKS が受理)（計算は有界）", "pi1": "記述的（予測対象外）", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 10, "name": "線形計画法（多項式可解）", "tier": "Σ₂", "prenex": "∃アルゴリズム ∀LP の入力 ∃多項式時間の出力（出力は「最適解」「実行不能」「非有界」のいずれかで、正しい）（機械の量化。旧形「∀入力 ∃解」は x≤0 ∧ x≥1 のような実行不能入力で偽）（外部査読 2026-11-06）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 11, "name": "平方剰余の相互法則", "tier": "Π₁", "prenex": "∀p,q 奇素数 (p≠q → (p/q)(q/p)=(−1)^((p−1)(q−1)/4))（p=q を許すと p=q=3 で左辺 0・右辺 −1 になり偽）", "pi1": "記述的（予測対象外）", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 12, "name": "Gauss-Bonnetの定理", "tier": "Π¹₂", "prenex": "∀多様体 M ∀計量 g ∃…（函数・集合の量化）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 13, "name": "整列の情報論的下界", "tier": "Π₁", "prenex": "∀n ∀比較木 T（深さ < ⌈log₂ n!⌉）∃置換 π（T は π を誤って整列する）（量化の範囲は n! 程度で計算可能。n の多項式では抑えられない）", "pi1": "記述的（予測対象外）", "A": "[—, EFA]", "A_src": "数え上げ：深さ d の木の葉は 2^d 以下、置換は n! 個（鳩ノ巣）。指数が要るので IΔ₀ ではない（標準的事実、要検算）", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 14, "name": "四色定理", "tier": "Π₁", "prenex": "∀平面グラフ G ∃4彩色", "pi1": "記述的（予測対象外）", "A": "[—, ZFC]", "A_src": "Gonthier (2005) Coq 形式化", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 15, "name": "有限単純群分類 (CFSG)", "tier": "Π₁", "prenex": "∀有限単純群 G, G は分類表のいずれか", "pi1": "記述的（予測対象外）", "A": "[—, ZFC]", "A_src": "Aschbacher–Smith (2004)", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 16, "name": "Poincaré予想", "tier": "Π₁", "prenex": "∀三角形分割 T（閉3次元多様体）, π₁(T)=1 → T≅S³（S³ の判定は決定可能：Rubinstein 1992、Thompson 1994。π₁ が自明は Σ₁）", "pi1": "記述的（予測対象外）", "A": "[—, ZFC]", "A_src": "Perelman (2003)", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 17, "name": "Yamabe問題", "tier": "Π¹₂", "prenex": "∀M（コンパクト多様体）∀g（Riemann 計量）∃g′（g′ は g に共形的で、スカラー曲率が定数）（函数の量化。共形性が無いと、既存の計量を証人にできて自明）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 18, "name": "調和写像の存在", "tier": "Π¹₂", "prenex": "∀M,N（コンパクト Riemann 多様体、N の断面曲率 ≤0）∀f:M→N ∃h（h は f にホモトピックで調和写像）（函数の量化）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 19, "name": "Willmore予想", "tier": "Π¹₂", "prenex": "∀はめ込み ∃…（函数の量化）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 20, "name": "Weil予想", "tier": "Π₁", "prenex": "∀q ∀X（F_q 上定義された滑らかな射影多様体。q と方程式系の有限データで与える）∀ℓ（char F_q と異なる素数）∀i ∀α（幾何学的コホモロジー H^i_ét(X̄,ℚ_ℓ) 上の Frobenius 固有値）[|α| = q^{i/2}]。Z は点の数から計算できる無限和（次数 i ごとに |α|=q^{i/2} を要求する。滑らか・射影の制限が要る: X=G_m では H¹=ℚ_ℓ(−1) で固有値が q。w を 1 つ選ぶ形も純粋性を落とす）（外部査読 2026-11-06）", "pi1": "記述的（予測対象外）", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 21, "name": "Kepler予想", "tier": "Π¹₁", "prenex": "∀配置 C（ℝ³ の点の可算集合の符号で、相異なる 2 点の距離 ≥ 2＝半径 1 の球が重ならない）(上密度 ≤ π/√18)（非重複の条件が無いと C=(1/10)ℤ³ で全空間を覆う。距離 ≥2 は半径 1 に対応する。外部査読 2026-11-06）", "pi1": "—", "A": "[—, ZFC]", "A_src": "Hales et al. (2017) Flyspeck", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 22, "name": "球充填 8次元 (E₈)", "tier": "Π¹₁", "prenex": "∀配置 C（ℝ⁸ の点の可算集合の符号で、相異なる 2 点の距離 ≥ 2）(上密度 ≤ π⁴/384)（「最適値」を値に置き換えた。Viazovska 2017 定理 1）（外部査読 2026-11-06）", "pi1": "—", "A": "[—, ZFC]", "A_src": "Viazovska (2017)", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 23, "name": "球充填 24次元 (Leech)", "tier": "Π¹₁", "prenex": "∀配置 C（ℝ²⁴ の点の可算集合の符号で、相異なる 2 点の距離 ≥ 2）(上密度 ≤ π¹²/12!)（Cohn–Kumar–Miller–Radchenko–Viazovska 2017 定理 1.1。8 次元の Viazovska 単著定理 1 とは別。外部査読 2026-11-06）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 24, "name": "Jordan曲線定理", "tier": "Π¹₂", "prenex": "∀Jordan 曲線（点集合）∁ は2成分（WKL₀ と同値：Sakamoto–Yokoyama 2007）", "pi1": "—", "A": "[RCA₀, WKL₀]", "A_src": "Sakamoto–Yokoyama, Arch. Math. Logic 46 (2007)：RCA₀ 上で WKL₀ と同値（書誌と抄録で確認、本文は未取得）", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 25, "name": "Schoenflies定理 (n=2)", "tier": "Π¹₂", "prenex": "∀Jordan 曲線 ∃同相写像（点集合・函数の量化。2次元は WKL₀ と同値）", "pi1": "—", "A": "[RCA₀, WKL₀]", "A_src": "同上（Schönflies も RCA₀ 上で WKL₀ と同値）", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 26, "name": "Mordell-Weilの定理", "tier": "Π₄", "prenex": "∀E ∃有限列 S ∀P∈E(ℚ) ∃係数 c (P=Σc_iS_i)", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 27, "name": "Dirichletの算術級数定理", "tier": "Π₂", "prenex": "∀a ∀d≥1 ((a,d)=1 → ∀n ∃p>n (Prime(p) ∧ p≡a mod d))（v1.0 の形は d=0, a=1 で p=1 を要求し偽）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "[F_0, F_2]", "b_grz": "E¹/E²", "b_src": "上界: Linnik (1944) p ≤ C·d^L（多項式）／下界: 証人は n+1 以上", "status": "記入済"}, {"id": 28, "name": "eの超越性", "tier": "Π₂", "prenex": "∀P≠0 ∃精度 (|P(e)| > 0 を示す精度)。P は整数係数", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "[—, F_1]", "b_grz": "—/E¹", "b_src": "入力 x は P の符号。超越測度（Popken・Mahler）で必要な精度は x の対数の多項式なので線形以下。下界は無し（符号化に依存する）", "status": "記入済"}, {"id": 29, "name": "πの超越性", "tier": "Π₂", "prenex": "∀P≠0 ∃精度 (|P(π)| > 0 を示す精度)。P は整数係数", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "[—, F_1]", "b_grz": "—/E¹", "b_src": "精度はビット数で数える。F_α の x は自然数（入力の符号）で、x ≥ 2^ν、x ≥ a。ν・log a はどちらも log x 以下なので、ν・log a の多項式は log x の多項式（x の線形以下）で、上界は F_1。入力 x は P の符号（次数 ν・高さ a）。必要な精度は x の対数の多項式なので線形以下。下界は無し。根拠: Mahler 1953 Remark 2（本文 p.41）が引く Fel'dman 1951 の \\|π−ω\\| > exp{−γ₁ν(1+ν log ν+log a) log(2+ν log ν+log a)}（二次資料で確定）。Mahler 自身の Theorem 2（p.40–41、指数 (m+1)ν log(m+1)、m=[20·2^{(5/2)(ν−1)}]）だけでは精度は x の多項式（F_2 の側）。\\|π−ω\\| の下界から \\|P(π)\\| の下界への換算（P の根への距離の積）は本表の導出（要確認）", "status": "記入済"}, {"id": 30, "name": "Catalan予想", "tier": "Π₁", "prenex": "∀a,b,x,y>1 (x^a−y^b=1 → (a,b,x,y)=(2,3,3,2))", "pi1": "記述的（予測対象外）", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 31, "name": "van der Waerdenの定理", "tier": "Π₂", "prenex": "∀k,r≥1 ∃N (任意の r 彩色 [N] に、公差 d≥1 の長さ k の単色 AP)（d=0 を許すと定数列で自明。v1.0 までの形は公差の条件が無かった）", "pi1": "—", "A": "[—, PRA]", "A_src": "Shelah, JAMS 1 (1988)（v5.1 の値。RCA₀ での証明可能性は未確認のため上界は PRA のまま）", "b_fa": "[F_2, F_3]", "b_grz": "E³/E³", "b_src": "下界: Berlekamp W(p+1,2) ≥ p·2^p（Bertrand で全ての k に広がる）／上界: Gowers, GAFA 11 (2001)：W(r,k) ≤ 2↑2↑r↑2↑2↑(k+9)（高さ固定の塔＝初等）", "status": "記入済"}, {"id": 32, "name": "Ramseyの定理", "tier": "Π₂", "prenex": "∀k ∃N (任意の2彩色 K_N に単色 K_k)", "pi1": "—", "A": "[—, EFA]", "A_src": "Erdős–Szekeres の初等的上界", "b_fa": "[F_2, F_2]", "b_grz": "E³/E³", "b_src": "Erdős–Szekeres 4^k／Erdős 2^{k/2}（両方のため）", "status": "記入済"}, {"id": 33, "name": "Gödelの不完全性定理", "tier": "Π₁", "prenex": "∀p (Prf_PA(p,⌜G⌝) → Prf_PA(f(p),⌜⊥⌝))、f は原始再帰的（「Con(PA)→G は証明不可」の算術化。旧形「G は証明不可」は Con(PA) と同値で PRA では証明できない）", "pi1": "記述的（予測対象外）", "A": "[—, PRA]", "A_src": "Hilbert–Bernays の導出可能条件を PRA で", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 34, "name": "Tarskiの定義不可能性定理", "tier": "Π₁", "prenex": "∀σ Prf_PA(d(σ), ⌜λ_σ↔¬σ(⌜λ_σ⌝)⌝)、d は原始再帰的（対角化補題の算術化。λ_σ は σ の不動点）", "pi1": "記述的（予測対象外）", "A": "[—, PRA]", "A_src": "上界 PRA の出典は無い（要出典）。Smith, Gödel Without (Too Many) Tears, ch.16 Theorem 59（本文）は定理そのもの（Q を含む無矛盾な p.r. 公理化理論は自言語の真理を定義できない）で、表の式（対角化補題の一様形 ∀σ Prf_PA(d(σ),…)）を PRA が証明することは述べていない。対角化の証明関係が原始再帰的であることは同書 §13.4（本文）", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 35, "name": "Hodge予想", "tier": "Π¹₂", "prenex": "∀多様体 ∀Hodge類 ∃代数的サイクル（集合の量化）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "🔮"}, {"id": 36, "name": "BSD予想", "tier": "Π₂", "prenex": "∀E/ℚ ∀r [(rank E(ℚ) ≥ r → ord_{s=1} L(E,s) ≥ r) ∧ (ord ≥ r → rank ≥ r)]。rank≥r は Σ₁（独立な r 点と regulator≠0）、ord≥r は Π₁（L^{(k)}(E,1)=0, k<r。L は modularity により計算可能）。Π₁∧Σ₁ を ∀ で閉じて Π₂", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "[—, —]", "b_grz": "—/—", "b_src": "Π₂ だが、証人（rank を与える点）の高さの上界は予想（Lang）で、出典のある上界が無い（空欄）", "status": "🔮"}, {"id": 37, "name": "Jacobian予想", "tier": "Π₁", "prenex": "∀n,d（次数 d の F:ℂⁿ→ℂⁿ についての ACF₀ の一階文）。deg F⁻¹ ≤ d^{n-1}（Bass–Connell–Wright）で一階になり、ACF₀ は決定可能", "pi1": "記述的（予測対象外）", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "🔮"}, {"id": 38, "name": "Birch-Tate予想", "tier": "Π¹₂", "prenex": "∀数体 ∃…（代数的対象の量化）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "🔮"}, {"id": 39, "name": "Fermatの最終定理 (FLT)", "tier": "Π₁", "prenex": "∀n>2 ∀a,b,c>0 (a^n+b^n≠c^n)", "pi1": "記述的（予測対象外）", "A": "[—, ZFC]", "A_src": "Wiles (1995)／McLarty BSL 16 (2010)", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 40, "name": "素数定理 (PNT)", "tier": "Π₃", "prenex": "∀ε>0 ∃X ∀x>X (|π(x)−li(x)| < ε·x/ln x)（π(x)∼li(x) と同値。v9.1 までの「< εx」は π(x)=o(x) にすぎず素数定理より弱かった）", "pi1": "—", "A": "[—, EFA]", "A_src": "Cornaros–Dimitracopoulos, AML 33 (1994)", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 41, "name": "保型性定理 (Modularity)", "tier": "Π₃", "prenex": "∀E ∃N ∃newform f (レベル N) ∀p (a_p(E)=a_p(f))", "pi1": "—", "A": "[—, ZFC]", "A_src": "BCDT (2001)", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 42, "name": "Mordell予想 (Faltings)", "tier": "Π₃", "prenex": "∀C（ℚ 上の種数 ≥2 の滑らかな射影曲線）∃B ∀P∈C(ℚ) (h(P)≤B)（v1.0 の形は種数の条件が無く、正の階数の楕円曲線で偽）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 43, "name": "Green-Tao定理", "tier": "Π₂", "prenex": "∀k≥1 ∃ (公差 d≥1 の長さ k の素数の等差数列)（d=0 を許すと 1 項の定数列で自明。v1.0 までの形は k≥1 と公差の条件が無かった）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "[F_2, F_3]", "b_grz": "E³/E³", "b_src": "上界: Green–Tao「A bound for progressions of length k in the primes」：2↑2↑2↑2↑2↑2↑2↑O(k)（高さ7の塔＝初等。Annals 167 の本文には無い）／下界: 項がすべて k より大なら公差は k 以下の全素数で割れる → 最大項 ≥ k#（指数的）", "status": "記入済"}, {"id": 44, "name": "Szemerédiの定理", "tier": "Π₂", "prenex": "∀k≥1 ∀δ(0<δ≤1) ∃N ∀A⊆[N] (|A|≥δN → ∃AP (AP⊆A ∧ AP は公差 d≥1 の k 項等差数列))（∀A は [N] 内で有界。δ は有理数。AP⊆A が無いと N=k・AP={1,…,k} で A と無関係に真。d=0 を許すと 1 点で自明）（外部査読 2026-11-06）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "[—, F_3]", "b_grz": "—/E³", "b_src": "上界: Gowers, GAFA 11 (2001)：N(k,δ) ≤ 2↑2↑δ^{-c_k}、c_k=2↑2↑(k+9)（高さ固定の塔＝初等）", "status": "記入済"}, {"id": 45, "name": "グラフマイナー定理", "tier": "Π¹₁", "prenex": "∀グラフの無限列 ∃i<j (G_i は G_j のマイナー)。有限形は Π₂（Friedman–Robertson–Seymour 1987）", "pi1": "—", "A": "[Π¹₁-CA₀, ZFC]", "A_src": "Friedman–Robertson–Seymour (1987)：Π¹₁-CA₀ では不可", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 46, "name": "Erdős Discrepancy問題", "tier": "Π₂", "prenex": "∀C ∃N ∀x∈{±1}^N ∃d,n (d≥1 ∧ n≥1 ∧ nd≤N ∧ |Σ_{1≤i≤n} x_{id}|>C)（∀x 以降は有界。d≥1 と添字の範囲が無いと和が n·x₀ になり自明。旧形「∃列で discrepancy>C」も自明に真で誤り）（外部査読 2026-11-06）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "[—, —]", "b_grz": "—/—", "b_src": "Tao (2016) の論法に N(C) の明示評価が見つからない（v6 で再確認、空欄のまま）", "status": "記入済"}, {"id": 47, "name": "Calabi予想", "tier": "Π¹₂", "prenex": "∀(X,ω)（コンパクト Kähler 多様体）∀ρ（[ρ]=2πc₁(X) を満たす閉 (1,1) 形式）∃ω′（[ω′]=[ω] かつ Ric(ω′)=ρ）（函数の量化。指定が無いと既存の Kähler 計量で自明）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 48, "name": "Feit-Thompson定理", "tier": "Π₁", "prenex": "∀有限群 G (|G| 奇数 → G 可解)", "pi1": "記述的（予測対象外）", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 49, "name": "Geometrization予想", "tier": "Π₂", "prenex": "∀T（閉3次元多様体の三角形分割）∃(素分解 M = M₁#…#M_n と、各 M_i の JSJ 分解の証拠 W)（向き付け可能な閉 3 次元多様体に限る。各 JSJ piece について、Seifert 束構造か双曲構造の証明書を与えている）。（まず素分解が要る: (S²×S¹)#(S²×S¹) は π₁=F₂ で非圧縮トーラスを持たず、JSJ だけでは分類できない。非向き付け可能な場合は向き付け二重被覆を経由する形になり、本表では扱わない＝未検証）（外部査読 2026-11-06）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "[—, —]", "b_grz": "—/—", "b_src": "Π₂ だが、証拠 W（双曲構造の証明書など）の大きさの上界の出典が無い（空欄）", "status": "記入済"}, {"id": 50, "name": "Monstrous Moonshine", "tier": "Π¹₂", "prenex": "∀… 頂点作用素代数（函数の量化）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 51, "name": "Atiyah-Singer指数定理", "tier": "Π¹₂", "prenex": "∀多様体 ∀楕円作用素 index の等式（函数の量化）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 52, "name": "Hilbert第5問題", "tier": "Π¹₂", "prenex": "∀局所コンパクト群 ∃Lie 群近似（集合の量化）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 53, "name": "Nash埋め込み定理", "tier": "Π¹₂", "prenex": "∀多様体 ∃等長埋込み（函数の量化）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 54, "name": "de Giorgiの定理 (Hilbert 19th)", "tier": "Π¹₂", "prenex": "∀… 正則性（函数の量化）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 55, "name": "Carlesonの定理 (Lusin予想)", "tier": "Π¹₂", "prenex": "∀… Lusin 予想（函数の量化）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 56, "name": "最小曲面の正則性（旧称「Engel問題」＝名称未確認）", "tier": "Π¹₂", "prenex": "∀… 面積最小カレントの正規性（集合の量化）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 57, "name": "Zhangの有界間隔定理", "tier": "Σ₃", "prenex": "∃B ∀n ∃p>n ∃q (p<q≤p+B ∧ Prime(p) ∧ Prime(q))", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済 △"}, {"id": 58, "name": "abc予想", "tier": "Π₃", "prenex": "∀ε>0 ∃K ∀a,b,c≥1 (a+b=c ∧ gcd(a,b)=1 → c < K·rad(abc)^{1+ε})（v1.0 の形は a+b=c と互いに素の条件が無く、a=b=1, c=2^n で偽）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "🔮⚠"}, {"id": 59, "name": "P≠NP (PA視点)", "tier": "Π₂", "prenex": "∀機械 M ∀c ∃入力 x (M は時間 |x|^c+c 以内に SAT を正しく判定しない)（P≠NP の Π₂ 形。v1.0 の形は時間の上限が無く、総当たりの機械で偽）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "[—, —]", "b_grz": "—/—", "b_src": "未解決（空欄）", "status": "🔮"}, {"id": 60, "name": "P vs BPP", "tier": "Π₃", "prenex": "∀M（ランダム化多項式時間機械）[ ∃x (1/3 < Pr_r[M(x,r)=1] < 2/3) ∨ ∃N（決定的多項式時間機械）∀x (N(x)=1 ⟺ Pr_r[M(x,r)=1] ≥ 2/3) ]", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "🔮"}, {"id": 61, "name": "Unique Games Conjecture", "tier": "Π₃", "prenex": "∀ε,δ>0 ∃k ∃R（時計つき多項式時間の帰着）∀φ [(φ∈SAT → val(R(φ))≥1−ε) ∧ (φ∉SAT → val(R(φ))≤δ)]。R(φ) はラベル数 k の unique game。内部（SAT の判定・val の計算）は有限の総当たりで判定可能", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "🔮"}, {"id": 62, "name": "Exponential Time Hypothesis", "tier": "Σ₃", "prenex": "∃δ>0 ∀M ∀m ∃φ（正規化された 3-CNF: 変数名は 1..n、同じ節の重複と余分なパディングを除いた表現。n は変数の個数。|φ|>m）(M は 2^{δn} ステップ以内に φ を正しく判定しない)（正規化を明記しないと、共通接頭部を長くするだけで読取り時間による自明化が起きる（外部査読の反例: C=x∨y∨z、U=この 3 変数上の全 8 節の連言）。正規化の下では s₃>0 と同値: 失敗入力が有限個なら有限表で補修して O(2^{δn}) 算法になり矛盾。時間切れは失敗に含める。外部査読 2026-11-06）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "🔮"}, {"id": 63, "name": "一般Schoenflies問題（滑らかな4次元が未解決）", "tier": "Π¹₂", "prenex": "∀滑らかな埋込み…（函数の量化）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "🔮"}, {"id": 64, "name": "Kolmogorov流不安定性", "tier": "Π¹₂", "prenex": "∀初期値 ∃解…（函数の量化）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 65, "name": "特異点解消 (標数0)", "tier": "Π₂", "prenex": "∀X（ℚ 上有限データの代数多様体）∃(blow-up の有限列)（列の終端 Y は非特異で、例外因子は正規交叉）（旧形は「X は非特異」と書いており、入力の性質を結論にしていた。外部査読 2026-11-06）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "[—, F_ω]", "b_grz": "—/—", "b_src": "Bierstone–Grigoriev–Milman–Włodarczyk, Asian J. Math. 15 (2011), 定理 6.4.2（arXiv:1206.3090 本文で確認）：固定 m=dim X で blow-up の個数・次数・近傍数は E^{m+3} の関数で抑えられる。m も入力に含めた一様な上界 F_ω は、固定 m の評価が m について一様に構成されているときの対角化による（本表の導出・要確認）。「一律の E^k には入らない」という下界は本文から出ないので書かない（v9.2）", "status": "記入済"}, {"id": 66, "name": "Burnside問題（有界指数）", "tier": "Π₂", "prenex": "∀m,n ∃N (B(m,n) ≤ N)（B(m,n) は有界 Burnside 群の位数。命題は反例で偽）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "[—, —]", "b_grz": "—/—", "b_src": "命題は偽（Novikov–Adian 1968 の反例）。証人関数は存在しない（空欄）", "status": "反例決着"}, {"id": 67, "name": "制限Burnside問題", "tier": "Π₃", "prenex": "∀r,n ∃N ∀G（r 元で生成され指数 n の有限群）(|G|≤N)（v1.0 の形は G の条件が無く偽）（書かれた形。Π₁ にするには計算可能な上界の出典が要る）", "pi1": "—", "A": "[—, ZFC]", "A_src": "Zelmanov (1991)", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 68, "name": "Kervaire不変量1問題", "tier": "Π₁", "prenex": "∀n (次元 2^n−2 に Kervaire 不変量 1 の元が存在する → n ≤ 7)", "pi1": "記述的（予測対象外）", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "記入済"}, {"id": 69, "name": "双子素数予想", "tier": "Π₂", "prenex": "∀n ∃p>n (Prime(p) ∧ Prime(p+2))", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "[—, —]", "b_grz": "—/—", "b_src": "未解決（空欄）", "status": "🔮 △"}, {"id": 70, "name": "Goldbach予想", "tier": "Π₁", "prenex": "∀偶数 n>2 ∃p,q≤n (Prime(p) ∧ Prime(q) ∧ p+q=n)", "pi1": "記述的（予測対象外）", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "🔮 △"}, {"id": 71, "name": "Collatz予想", "tier": "Π₂", "prenex": "∀n≥1 ∃k (T^k(n)=1)（v1.0 の形は n=0 で T(0)=0 となり偽）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "[—, —]", "b_grz": "—/—", "b_src": "未解決（空欄）", "status": "🔮 ⚠"}, {"id": 72, "name": "YM質量ギャップ", "tier": "Π¹₂", "prenex": "∀G（コンパクト単純ゲージ群）∃量子 Yang–Mills 理論（質量ギャップ > 0）（函数の量化。旧形「∀場の理論 ∃質量ギャップ」は自由質量 0 場で偽）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "🔮 ⚠"}, {"id": 73, "name": "特異点解消 (正標数)", "tier": "Π₂", "prenex": "∀d ∀X（体 k 上の d 次元射影多様体）∃(blow-up の有限列)（Y は k 上 regular・例外因子は正規交叉）。注: 旧形は「F_p 上有限生成の体」を量化しており、Spec K が正則なので空列で済み自明だった（外部査読 2026-11-06）。真偽は dim ≥4・標数 p で未解決。regular と smooth は不完全体で異なるので、regular を採る（外部査読 2026-11-06）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "[—, —]", "b_grz": "—/—", "b_src": "Π₂ だが、解消の存在自体が dim ≥4 で未解決。証人（blow-up 列）の上界の出典が無い", "status": "🔮"}, {"id": 74, "name": "連続体仮説 (CH)", "tier": "算術外", "prenex": "集合論の命題（ZFC 独立）", "pi1": "—", "A": "[ZFC, —]", "A_src": "Gödel (1940), Cohen (1963)：ZFC 独立", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "⚡"}, {"id": 75, "name": "Goodsteinの定理", "tier": "Π₂", "prenex": "∀n ∃k (Goodstein 列が k で 0)", "pi1": "—", "A": "[PA, PA+TI(ε₀)]", "A_src": "Kirby–Paris, Bull. LMS 14 (1982)", "b_fa": "[F_ε₀, F_ε₀]", "b_grz": "非PR/非PR", "b_src": "Cichoń, Proc. AMS 87 (1983)：停止までの長さは Hardy 階層 H_ε₀ の水準", "status": "⚡"}, {"id": 76, "name": "Paris-Harrington定理", "tier": "Π₂", "prenex": "∀k,m,n≥1 ∃N ∀c:[N]^k→m ∃H⊆[N] (H は c で同次 ∧ |H| ≥ n ∧ |H| ≥ min H)（PH 1977 §1.1: card(H) ≥ min(H) を「relatively large」と定義する。式は原典と同じ形）", "pi1": "—", "A": "[PA, PA+1-Con(PA)]", "A_src": "Paris–Harrington (1977)", "b_fa": "[F_ε₀, F_ε₀]", "b_grz": "非PR/非PR", "b_src": "Ketonen–Solovay, Ann. Math. 113 (1981)：PH の最小の証人は F_ε₀ の水準", "status": "⚡"}, {"id": 77, "name": "P≠NP (S₂¹視点)", "tier": "Π₂", "prenex": "∀M ∀c ∃x（SAT の入力）(M は時間 |x|^c + c 以内に x を正しく判定しない)（時間切れを含める: 含めないと、正しい総当たり決定機械が証人不在になり式が偽になる。Cook の定義の上界は n^c + c。S₂¹ の視点は証明の強さの話で、階層は Π₂。外部査読 2026-11-06）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "[—, —]", "b_grz": "—/—", "b_src": "Π₂ だが、回路下界が未解決。証人（誤る入力 x）の上界の出典が無い", "status": "⚠"}, {"id": 78, "name": "Riemann予想 (RH)", "tier": "Π₁", "prenex": "∀n≥1 (σ(n) ≤ H_n + exp(H_n)·log H_n)（Lagarias 2002 の Π₁ 形。H_n は調和数、σ は約数和。解析形 ∀s(ζ(s)=0 ∧ 0<Re(s)<1 → Re(s)=1/2) と同値。1.0 までの表示は解析形で、算術の Π₁ 文ではなかった）", "pi1": "記述的（予測対象外）", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "🔮"}, {"id": 79, "name": "Navier-Stokes正則性", "tier": "Π¹₂", "prenex": "∀u₀（ℝ³ 上の滑らかで減衰する発散 0 の初期値。f=0）∃u（大域的に滑らかで有限エネルギーの解）（Fefferman (A)。函数の量化。(C) は外力 f つきの否定。v1.0 の形「大域解 or 有限時間爆発」は恒真）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "決着(claimed)"}, {"id": 80, "name": "3次元Euler方程式正則性", "tier": "Π¹₂", "prenex": "∀初期域 ∃…（函数の量化）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "決着(claimed)"}, {"id": 81, "name": "Erdős–Straus予想", "tier": "Π₁", "prenex": "∀n>1 ∃x,y,z (1≤x,y,z≤2n⁴ ∧ 4xyz = n(xy+yz+zx))（v1.0 の形は x=y=z=0 が証人になり自明）（x≤y≤z なら x≤3n/4, y≤2nx, z≤nxy。旧形の上界 n は誤り：n=5 で反例）", "pi1": "記述的（予測対象外）", "A": "未記入", "A_src": "—", "b_fa": "—", "b_grz": "—", "b_src": "Π₂ でない（対象外）", "status": "🔮"}, {"id": 82, "name": "γの無理数性", "tier": "Π₂", "prenex": "∀p∈ℤ ∀q≥1 Σ₁(γ≠p/q)（p/q は既約とは限らない有理数。q=0 を量化しないために q≥1 を明記。Σ₁ は「分母 q の有理数として γ と一致しない」ことの符号化。外部査読 2026-11-06）", "pi1": "—", "A": "未記入", "A_src": "—", "b_fa": "[—, —]", "b_grz": "—/—", "b_src": "証人は γ と p/q の差を示す精度（無理数度に相当）。未解決のため空欄", "status": "🔮⚠"}], "cal": [{"id": "C1", "name": "Goodstein の定理（全 m）", "prenex": "∀n ∃k (Goodstein 列 (n, base 2) は k で 0)", "A": "[PA, PA+TI(ε₀)]", "method": "増え方を使う", "A_src": "下界: Kirby–Paris 1982, Thm 1(ii)（本文で確認）。上界: 同論文の注（本文）: h-Goodstein 列の停止は TI(ε₀) と同値で、固定 base はその特別の場合", "B": "[F_ε₀, F_ε₀]", "B_grz": "非PR/非PR", "B_src": "Cichoń 1983（本文で確認）: 停止までの長さ = H_α(x+1)−1（Hardy 階層）。H_ε₀ は PA で全域と証明できない"}, {"id": "C2", "name": "Paris–Harrington の定理", "prenex": "∀k,m,n≥1 ∃N ∀c:[N]^k→m ∃H⊆[N] (H は c で同次 ∧|H|≥ n ∧|H|≥ min H)（PH 1977 §1.1 の定義は card(H) ≥ min(H)。式は原典と同じ形）", "A": "[PA, PA+1-Con(PA)]", "method": "使わない", "A_src": "下界: Paris–Harrington 1977, §2（原典 PDF p.1134 で確認）: Con(T)→Con(PA) と 1.2→Con(T)。上界: PA+1-Con(PA)（監査 v7.1 で訂正。PH は PA 上で 1-Con(PA) と同値。PA+Con(PA) は PA と同じ全域関数しか持たないので PH を証明しない）", "B": "[F_ε₀, F_ε₀]", "B_grz": "非PR/非PR", "B_src": "Paris–Harrington 1977, Thm 3.2（本文）: f(e) は PA で全域と証明できる任意の g を支配する。Ketonen–Solovay 1981 が同種の分類を与える"}, {"id": "C3", "name": "Kirby–Paris の hydra", "prenex": "∀H ∃k (KP の戦略 τ での H との battle が k で終わる)（τ は KP 1982 が Theorem 2(ii) の証明で作る再帰的戦略：「we shall produce a recursive strategy τ」「in P we cannot prove that τ is a winning strategy」。B はこの τ での battle の長さ。「every recursive strategy」の形は φ_e の全域性を仮定に置くので Π₃ で、Π₂ の行には書かない。v1.0 は H の量化が無く、v1.1 は ∀σ（再帰的戦略）で Π₂ でなかった）", "A": "[PA, PA+TI(ε₀)]", "method": "増え方を使う", "A_src": "下界: Kirby–Paris 1982, Thm 2(ii)（本文で確認）。上界: 同 Thm 2(i) の ordinal 割当（TI(ε₀)）", "B": "[F_ε₀, F_ε₀]", "B_grz": "非PR/非PR", "B_src": "Kirby–Paris 1982, Remark（p.293、本文）: 「the function giving the lengths of battles for hydras of height 2 with strategy τ is not provably total in IΣ₁ and hence is not primitive recursive」。高さ k+1 では IΣ_k。（旧版が引いた Prop 8 は Goodstein 列の停止時刻の命題で、hydra の battle 長ではない）"}, {"id": "C4", "name": "弱い Goodstein（Process 1、通常の基数表示）", "prenex": "∀N ∀x ∃k (Process 1 が k で 0)", "A": "[PRA, PA]", "method": "増え方を使う", "A_src": "下界: Cichoń 1983, Thm 1（本文で確認）: PRA では証明できない。上界: PA（監査 v7.1 で訂正。停止は TI(ω^ω) から出て、PA は ε₀ 未満の TI を証明する）。v8: IΣ_2 まで下げる出典は見つからなかった（IΣ_2 の全域関数の水準と TI(ω^ω) の関係を示す文献を特定できず）", "B": "[F_ω, F_ω]", "B_grz": "非PR/非PR", "B_src": "Cichoń 1983（本文）: Process 1 の順序数は ω^ω 未満で、H_{ω^ω} は Ackermann の一版（PRA で全域と証明できない）。H_{ω^α} = F_α なので F_ω（監査 v8.1 で出典の文を本文どおりに直した。値は変わらない）"}, {"id": "C5", "name": "Goodstein（塔に制限: m < n^{n^n}、KP Thm 1' の k=2）", "prenex": "∀n>1 ∀m < n^{n^n} ∃k (Goodstein 列 (m, base n) は k で 0)（n が3回の塔）", "A": "[IΣ_2, IΣ_3]", "method": "増え方を使う", "A_src": "Kirby–Paris 1982, Thm 1'（本文で確認）: (ii) IΣ_k は n が k+1 回の塔の場合を証明しない、(i) IΣ_k は n が k 回の塔（の上に p）の場合を証明する。n が3回の塔なので、k=2 で下界、k=3（p=1）で上界（監査 v8.1: v7・v8 の「塔の高さ2」と m<n↑↑↑2・m<n^n は、この A と別の命題だった）", "B": "[F_ω^ω, F_ω^ω]", "B_grz": "非PR/非PR", "B_src": "Cichoń 1983 の等式 長さ = H_{o_n(m)}(n+1) − 1（本文）。m < n^{n^n} なら o_n(m) < ω^{ω^ω} で上界 H_{ω^{ω^ω}} = F_{ω^ω}。m = n^{n^{n−1}} では o_n(m) = ω^{ω^{n−1}} で長さ = F_{ω^{n−1}}(n+1) − 1 なので、証人関数は F_{ω^ω} の水準に達する（等式なので下界も出る）。H_{ω^α} = F_α を使う（Cichoń: H_{ω^ω} は Ackermann。監査 v8.1 で v8 の [—, F_ω^ω]（m<n^n の値）から訂正）"}, {"id": "C6", "name": "hydra（高さ 3 に固定）", "prenex": "∀H（高さ 3 の hydra）∃k (KP の戦略 τ での battle が k で終わる)（KP 1982 の Remark: 高さ k+1 の hydra では IΣ_k で証明できない。k=2 の行。「the function giving the lengths of battles for hydras of height 2 with strategy τ is not provably total in IΣ₁」と同じく τ で書く。v1.0 は戦略の指定が無く、v1.1 は ∀σ（再帰的戦略）で Π₂ でなかった）", "A": "[IΣ_2, IΣ_3]", "method": "増え方を使う", "A_src": "下界: Kirby–Paris 1982, Thm 2 の後の注（本文の末尾）: 高さ k+1 の hydra では IΣ_k で証明できない。k=2 の行。上界 IΣ_3: 本文に記述なし（IΣ_n が ω_{n+1} 未満の TI を証明するという標準的事実から。要出典）。注: KP が τ を明記するのは高さ 2 の battle 長についてなので、高さ 3 への移し替えは類推（未検証）", "B": "[—, F_ω^ω]", "B_grz": "—/非PR", "B_src": "Kirby–Paris 1982 の ordinal 割当で、高さ3の hydra の ordinal は ω^{ω^ω} 未満。battle の長さ ≤ H_{ω^{ω^ω}}(n) = F_{ω^ω}(n)。上界のみ（監査 v8.1 で v8 の F_ω^ω^ω から訂正: H_{ω^α} = F_α。KP 本文「高さ2 の battle の長さは原始再帰でない」= H_{ω^ω} = F_ω と整合）"}, {"id": "C7", "name": "グラフマイナー定理の有限形", "prenex": "∀k ∃N（有限形は ∀k∃N の形。正確な形は本文未取得）", "A": "[Π¹₁-CA₀, ZFC]", "method": "未確認", "A_src": "Friedman–Robertson–Seymour 1987（文献はあるが本文未取得）: Π¹₁-CA₀ では証明できない", "B": "[—, —]", "B_grz": "—/—", "B_src": "未取得（証人の増え方の上界の出典が無い）"}, {"id": "C8", "name": "Kruskal の定理の有限形", "prenex": "∀c ∃n ∀T₁…T_n（各 T_i は頂点数 ≤ i+c の有限木 → ∃i<j で T_i は T_j に inf を保って埋め込める）（Friedman, FOM 289, 2006 の FFF の形。v9.1 までの「頂点 ≤k」の形は同型類が有限個なので鳩の巣で自明に成り立ち、ATR₀ の下界は当てはまらなかった）", "A": "[ATR₀, ZFC]", "method": "未確認", "A_src": "FOM 289 の下界は個別の FFF(5)・FFF(6) の証明の長さ（A(10) 記号）の話で、∀c の文の ATR₀ 下界ではない。投稿には FFF(6) を FFF(5) と書いた添字の誤記がある。∀c の ATR₀ 下界は Simpson 1985（未取得）に拠る", "B": "[—, —]", "B_grz": "—/—", "B_src": "未取得（同上）"}, {"id": "N1", "name": "∀x∃y (y=0 ∧ ¬Prf_PA(x,⌜⊥⌝))", "prenex": "∀x ∃y (y=0 ∧ ¬Prf_PA(x,⌜⊥⌝))", "A": "[PA, PA+Con(PA)]", "method": "使わない", "A_src": "PA では証明できない（第二不完全性定理）。PA+Con(PA) では証明できる。論法は増え方と無関係", "B": "[F_0, F_0]", "B_grz": "E¹/E¹", "B_src": "証人は定数 y=0。対照（自然な命題ではない）"}, {"id": "N2", "name": "#2（素数無限）と IOpen", "prenex": "∀n ∃p>n Prime(p)", "A": "[IOpen, EFA]", "method": "使わない", "A_src": "下界: Shepherdson のモデルでは、Z に入る既約元は Z の元だけ（Biljakovic–Kochetov–Kuhlmann, 「Primes and Irreducibles in Truncation Integer Parts of Real Closed Fields」§0 p.2、本文で確認）。Berarducci–Otero 1996 本文も同じモデルを扱う。上界: Paris–Wilkie–Woods 1988", "B": "[F_0, F_1]", "B_grz": "E¹/E¹", "B_src": "証人は n+1 以上（線形）。Bertrand で n<p≤2n。対照（#2 の Prime は既約元の形）"}]};
+const LANG = {ja:null};
+let L = 'ja';
+
+/* ---------- 理論の強さの順序（一階の算術・二階は別スケール） ---------- */
+const FO = {"iopen":-3,"iδ₀":-2,"idelta0":-2,"efa":-1,"pra":0,"iσ₁":1,"iσ1":1,"iσ₂":2,"iσ2":2,
+  "iσ₃":3,"iσ3":3,"pa":4,"pa+1-con(pa)":5,"pa+con(pa)":5,"pa+ti(ε₀)":6,"aca₀":7,"atr₀":8,
+  "π¹₁-ca₀":9,"zfc":10};
+const SO = {"rca₀":0,"wkl₀":1,"aca₀":2};
+const NAME={ja:{},en:{"iopen":"IOpen","iδ₀":"IΔ₀","efa":"EFA","pra":"PRA","pa":"PA"}};
+const rank=(x,tbl)=>{const k=String(x).trim().toLowerCase().replace(/\s+/g,'');return tbl[k]===undefined?null:tbl[k]};
+function parseA(a){
+  a=(a||'').trim(); const m=a.match(/^\[(.+?),(.+?)\]/);
+  if(!m) return null;
+  const lo=m[1].trim(), up=m[2].trim();
+  const loM=lo==='—'||lo==='-', upM=up==='—'||up==='-';
+  const rlo=loM?null:rank(lo,FO), rup=upM?null:rank(up,FO);
+  const slo=loM?null:rank(lo,SO), sup=upM?null:rank(up,SO);
+  const fo = (rlo!==null||rup!==null||loM||upM) && !(slo!==null||sup!==null) ;
+  return {lo,up,loM,upM,rlo,rup,slo,sup,scale:(slo!==null||sup!==null)?'so':'fo'};
+}
+function kindOf(a){
+  const p=parseA(a); if(!p) return 'none';
+  if(p.loM&&p.upM) return 'none';
+  if(p.loM) return 'upper'; if(p.upM) return 'lower';
+  return p.lo!==p.up ? 'both' : 'exact';
+}
+/* ---------- 文言（日/英） ---------- */
+const S={
+ ja:{kind:{both:'独立が分かる',exact:'ちょうど',upper:'上界のみ',lower:'下界のみ',none:'未記入'},
+  q:'命題・式・出典で検索（例: 素数, Goodstein, Π₂, Kirby）',
+  tiers:['82 命題','校正表'],h_presets:'逆引き',h_check:'原稿チェック',
+  presetsLead:'よく使う切り口をそのまま押せる。件数は 1.8 のデータで数えた値。',
+  checkLead:'文章を貼ると、含まれる命題を拾って「独立か／どこまで証明できるか」を返す。断定はしないので、候補を見て自分で選ぶ。',
+  draftPh:'例: 素数が無限に存在することは IOpen では証明できない。Goodstein の定理は PA では証明できない。',
+  run:'調べる',clear:'空にする',noHit:'命題は見つからなかった。名前や式の一部を入れると当たりやすい。',
+  interpret:{both:r=>`独立が分かっている。${r.lo} では証明できず、${r.up} で証明できる。`,
+   exact:r=>`${r.lo} ちょうど。独立ではない。`,
+   upper:r=>`${r.up} で証明できる。ただし ${r.up} より弱い体系で証明できるかは未確定で、「独立」とは言えない。`,
+   lower:r=>`${r.lo} では証明できない。上界（どの体系なら証明できるか）は未確定。`,
+   none:r=>'軸A は未記入（文献の値が未取得）。'},
+  risk:'この文は「独立」「証明できない」と言っているが、当たった命題は上界しか分かっていない。独立とは書けない。',
+  safe:'当たった命題の区間と整合している。ただし出典の 1 行確認は要る。',
+  cite:'引用文をコピー',copied:'コピーしました',
+  useNote:'値は 2026-11-06 時点の文献の写しで、未査読の行を含む。断定する前に出典の該当箇所を 1 行確認すること。'},
+ en:{kind:{both:'provably independent',exact:'exact',upper:'upper bound only',lower:'lower bound only',none:'not entered'},
+  q:'Search by statement, formula, source (e.g. primes, Goodstein, Π₂, Kirby)',
+  tiers:['82 propositions','Comparison table'],h_presets:'Reverse lookup',h_check:'Draft check',
+  presetsLead:'Common slices of the table. Counts computed from the 1.8 data.',
+  checkLead:'Paste a draft. It finds the propositions you mention and tells you whether independence is established — it never asserts, you pick.',
+  draftPh:'e.g. Goodstein\'s theorem is not provable in PA.',
+  run:'Check',clear:'Clear',noHit:'No proposition found. Try a name or a fragment of the formula.',
+  interpret:{both:r=>`Independence established: not provable in ${r.lo}, provable in ${r.up}.`,
+   exact:r=>`Exactly ${r.lo}. Not independent.`,
+   upper:r=>`Provable in ${r.up}. Whether a weaker theory proves it is unresolved — do not call it independent.`,
+   lower:r=>`Not provable in ${r.lo}. The upper bound is unknown.`,
+   none:r=>'Axis A not entered.'},
+  risk:'Your sentence claims independence / unprovability, but this proposition only has an upper bound. You cannot write "independent" here.',
+  safe:'Consistent with the recorded interval. Still verify the source line.',
+  cite:'Copy citation',copied:'Copied',
+  useNote:'Values are as of 2026-11-06 and include rows not yet audited against the original sources. Verify one line before asserting.'}
+};
+const T=()=>S[L];
+const esc=s=>String(s==null?'':s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+/* ---------- 状態 ---------- */
+const state={q:'',tier:null,kind:null,sel:null,tab:'t82',view:'list'};
+const RAW=[...DATA.rows.map(r=>({...r,kind:kindOf(r.A),iv:parseA(r.A),isCal:false})),
+           ...DATA.cal.map(r=>({...r,kind:kindOf(r.A),iv:parseA(r.A),tier:r.tier||'Π₂',isCal:true}))];
+const all=()=> RAW.filter(r=> r.isCal === (state.tab==='cal'));
+
+/* ---------- 逆引き（プリセット） ---------- */
+const PRESETS=[
+ {id:'pa-not',ja:'PA で証明できない',en:'Not provable in PA',d:{ja:'軸A の下界が PA 以上',en:'lower bound ≥ PA'},
+  f:r=>r.iv&&r.iv.scale==='fo'&&r.iv.rlo!==null&&r.iv.rlo>=4},
+ {id:'pa-ok',ja:'PA で証明できる',en:'Provable in PA',d:{ja:'軸A の上界が PA 以下',en:'upper bound ≤ PA'},
+  f:r=>r.iv&&r.iv.scale==='fo'&&r.iv.rup!==null&&r.iv.rup<=4},
+ {id:'iopen-not',ja:'IOpen で証明できない',en:'Not provable in IOpen',d:{ja:'IOpen より強い体系が要る',en:'needs more than IOpen'},
+  f:r=>r.iv&&r.iv.scale==='fo'&&r.iv.rlo!==null&&r.iv.rlo>=-3},
+ {id:'indep',ja:'独立が分かっている',en:'Independence established',d:{ja:'上下が違い、両方の値がある',en:'both bounds known and different'},
+  f:r=>r.kind==='both'},
+ {id:'upper',ja:'上界だけ（独立とは言えない）',en:'Upper bound only',d:{ja:'「証明できる」だけが分かっている',en:'only provability is known'},
+  f:r=>r.kind==='upper'},
+ {id:'so',ja:'二階の体系での値',en:'Second-order values',d:{ja:'RCA₀・WKL₀ のスケール',en:'RCA₀ / WKL₀ scale'},
+  f:r=>r.iv&&r.iv.scale==='so'},
+ {id:'lin',ja:'証人が線形以下',en:'Witness is linear or less',d:{ja:'軸B の上界が F_1 以下',en:'witness grows at most linearly'},
+  f:r=>/F_[01]\]/.test(r.b_fa||'')||/F_[01]\]/.test(r.B||'')},
+ {id:'poly',ja:'証人が多項式くらい',en:'Witness roughly polynomial',d:{ja:'軸B の上界が F_2 以下',en:'witness up to F_2'},
+  f:r=>/F_[012]\]/.test(r.b_fa||'')||/F_[012]\]/.test(r.B||'')},
+ {id:'eps',ja:'証人が F_ε₀ 級',en:'Witness at F_ε₀',d:{ja:'PA で全域と証明できない増え方',en:'growth not provably total in PA'},
+  f:r=>/ε₀/.test((r.b_fa||'')+(r.B||''))},
+ {id:'blank',ja:'軸A が未記入（文献の穴）',en:'Axis A blank',d:{ja:'まだ値を入れていない行',en:'no value entered yet'},
+  f:r=>r.kind==='none'}
+];
+
+/* ---------- 一覧 ---------- */
+function renderChips(){
+  const t=T();
+  const tabs=[[ 't82',t.tiers[0] ],['cal',t.tiers[1]]];
+  const cntTier={}; all().forEach(r=>cntTier[r.tier]=(cntTier[r.tier]||0)+1);
+  document.getElementById('tiers').innerHTML=
+    tabs.map(([k,l])=>`<span class="chip ${state.tab===k?'on':''}" data-tab="${k}">${l}</span>`).join('')
+    + Object.entries(cntTier).sort((a,b)=>b[1]-a[1]).map(([k,n])=>
+      `<span class="chip ${state.tier===k?'on':''}" data-tier="${k}" title="${k}">${k} <span style="opacity:.6">${n}</span></span>`).join('');
+  const cntKind={}; all().forEach(r=>cntKind[r.kind]=(cntKind[r.kind]||0)+1);
+  document.getElementById('kinds').innerHTML=['both','exact','upper','lower','none'].filter(k=>cntKind[k])
+    .map(k=>`<span class="chip ${state.kind===k?'on':''}" data-kind="${k}">${t.kind[k]} <span style="opacity:.6">${cntKind[k]}</span></span>`).join('');
+  document.querySelectorAll('[data-tier]').forEach(e=>e.onclick=()=>{state.tier=state.tier===e.dataset.tier?null:e.dataset.tier;render()});
+  document.querySelectorAll('[data-kind]').forEach(e=>e.onclick=()=>{state.kind=state.kind===e.dataset.kind?null:e.dataset.kind;render()});
+  document.querySelectorAll('[data-tab]').forEach(e=>e.onclick=()=>{state.tab=e.dataset.tab;state.sel=null;render()});
+}
+function filtered(){
+  const q=state.q.toLowerCase();
+  return all().filter(r=>{
+    if(state.tier&&r.tier!==state.tier) return false;
+    if(state.kind&&r.kind!==state.kind) return false;
+    if(!q) return true;
+    return [r.name,r.prenex,r.A,r.A_src,r.tier,String(r.id)].join('\n').toLowerCase().includes(q);
+  });
+}
+function renderList(rows){
+  const el=document.getElementById('list');
+  if(!rows.length){el.innerHTML=`<div class="empty">${esc(T().noHit)}</div>`;return}
+  el.innerHTML=rows.map(r=>`<div class="item ${String(r.id)===String(state.sel)?'sel':''}" data-id="${r.id}">
+    <span class="n">${r.id}</span><span>
+    <span class="nm">${esc(r.name)}</span>
+    <span class="meta"><span class="badge">${esc(r.tier)}</span>${(r.A&&r.A.trim()&&r.A.trim()!=='未記入')?`<span class="ival">${esc(r.A)}</span>`:''}${r.kind!=='none'?`<span class="kind k-${r.kind}">${T().kind[r.kind]}</span>`:''}</span>
+    </span></div>`).join('');
+  el.querySelectorAll('.item').forEach(e=>e.onclick=()=>{state.sel=e.dataset.id;render()});
+  document.getElementById('count').textContent=rows.length+' 件';
+}
+function interpretHTML(r){
+  const p=r.iv, t=T();
+  if(!p||r.kind==='none') return `<div class="warn">${esc(t.interpret.none(r))}</div>`;
+  const cls=r.kind==='upper'||r.kind==='none'?'note':'note';
+  return `<div class="${cls}">${esc(t.interpret[r.kind](p))}</div>`;
+}
+function citation(r){
+  return `${r.id}. ${r.name}\n階層: ${r.tier}\n式: ${r.prenex}\n軸A: ${r.A}\n${r.b_fa&&r.b_fa!=='—'?'軸B: '+r.b_fa+'\n':''}${r.B&&r.B!=='—'?'軸B: '+r.B+'\n':''}出典: ${r.A_src}\n（Forb-LT 一覧表 1.8 / 値は文献の写し）`;
+}
+function renderDetail(){
+  const el=document.getElementById('detail'), t=T();
+  const rows=filtered();
+  if(!state.sel){el.innerHTML=`<div class="empty">${L==='ja'?'左の一覧から命題を選んでください。':'Pick a proposition on the left.'}</div>`;return}
+  const r=all().find(x=>String(x.id)===String(state.sel))||rows[0];
+  if(!r){el.innerHTML='<div class="empty">—</div>';return}
+  const bfa=(r.b_fa&&r.b_fa!=='—'&&r.b_fa.trim())?r.b_fa:(r.B&&r.B!=='—'?r.B:'');
+  const bsrc=(r.b_fa?r.b_src:r.B_src)||'';
+  el.innerHTML=`
+    <div class="h"><span class="num">${esc(r.id)}</span><h2>${esc(r.name)}</h2></div>
+    <div class="tags"><span class="tag tier">${esc(r.tier)}</span><span class="tag">${esc(r.A)}</span>
+      <span class="tag">${esc(t.kind[r.kind])}</span>${r.status?`<span class="tag">${esc(r.status)}</span>`:''}</div>
+    <section><div class="k">${L==='ja'?'冠頭形':'Prenex form'}</div><div class="formula">${esc(r.prenex)}</div></section>
+    <section><div class="k">${L==='ja'?'軸A（証明できる体系／できない体系）':'Axis A (provable / not provable)'}</div>
+      ${interpretHTML(r)}
+      ${r.A_src?`<div class="txt" style="margin-top:9px">${esc(r.A_src)}</div>`:''}
+      ${r.method?`<div class="txt" style="margin-top:7px;color:var(--muted)">A 下界の論法: ${esc(r.method)}</div>`:''}</section>
+    ${bfa?`<section><div class="k">${L==='ja'?'軸B（証人の増え方）':'Axis B (growth of witnesses)'}</div>
+      <div class="big">${esc(bfa)}</div>
+      ${r.b_grz&&r.b_grz!=='—'?`<div class="txt" style="margin-top:5px">Grzegorczyk: ${esc(r.b_grz)}</div>`:''}
+      ${r.B_grz&&r.B_grz!=='—'?`<div class="txt" style="margin-top:5px">Grzegorczyk: ${esc(r.B_grz)}</div>`:''}
+      ${bsrc?`<div class="txt" style="margin-top:7px;color:var(--muted)">${esc(bsrc)}</div>`:''}</section>`:''}
+    <section><div class="k">${L==='ja'?'この命題を自分の文章で使うとき':'Before you cite it'}</div>
+      <div class="warn">${esc(t.useNote)}</div>
+      <button class="act" id="cp" style="margin-top:8px">${esc(t.cite)}</button>
+      <span id="cpm" style="font-size:12px;color:var(--muted);margin-left:8px"></span></section>`;
+  document.getElementById('cp').onclick=async()=>{
+    const txt=citation(r);
+    try{await navigator.clipboard.writeText(txt);}catch(e){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();}
+    document.getElementById('cpm').textContent=T().copied;
+  };
+}
+
+/* ---------- 原稿チェック ---------- */
+const ALIAS={ // 命題 ID → 手で足した言い換え（名前から自動で作れないもの）
+ 1:['三平方','ピタゴラス','pythagoras'],2:['素数','素数の無限','primes','prime'],3:['無理数','√2','sqrt2'],
+ 6:['ユークリッドの補題','euclid'],7:['算術の基本定理','素因数分解','fundamental theorem of arithmetic'],
+ 8:['正規表現','オートマトン','regex','regular expression'],13:['整列','比較ソート','comparison sort'],
+ 14:['四色','four color'],16:['ポアンカレ','poincare'],20:['ヴェイユ','weil'],
+ 21:['ケプラー','球充填','kepler','sphere packing'],22:['E8','エイト'],23:['リーチ格子','leech'],
+ 24:['ジョルダン','jordan'],44:['セメレディ','szemeredi','等差数列'],49:['幾何化','geometrization','素分解'],
+ 62:['ETH','指数時間仮説','exponential time hypothesis'],72:['ヤン＝ミルズ','yang','質量ギャップ','mass gap'],
+ 77:['P≠NP','P vs NP','SAT'],82:['オイラー定数','euler constant','γ']
+};
+const CAL_ALIAS={C1:['goodstein','グッドスタイン'],C2:['paris','harrington','パリス','ハリントン','PH 定理'],
+ C3:['hydra','ヒドラ','カービー','kirby'],C4:['弱い goodstein','process 1'],C5:['塔','tetration'],
+ C6:['hydra 高さ','battle 長'],C7:['kruskal','クラスカル','木埋め込み'],C8:['friedman','フリードマン','FFF'],
+ N1:['con(pa)','無矛盾'],N2:['iopen','シェファードソン','shepherdson']};
+function indexOfRows(){
+  const items=[];
+  const push=(r,aliases,src)=>{
+    const base=[r.name.replace(/の定理|予想|問題|定理/g,''), ...(aliases||[])];
+    items.push({r,terms:base.filter(s=>s&&s.length>=2).map(s=>s.toLowerCase()),src});
+  };
+  const A2={}; Object.entries(ALIAS).forEach(([k,v])=>A2[k]=v);
+  RAW.filter(r=>!r.isCal).forEach(r=>push(r,A2[r.id]||[],'row'));
+  RAW.filter(r=>r.isCal).forEach(r=>push(r,CAL_ALIAS[r.id]||[],'cal'));
+  return items;
+}
+const IDX=indexOfRows();
+function analyse(text){
+  const lines=text.split(/[。．\n]/).map(s=>s.trim()).filter(s=>s.length>=6);
+  const out=[];
+  for(const line of lines){
+    const low=line.toLowerCase();
+    const hits=[];
+    for(const it of IDX){
+      let score=0, hitTerm=null;
+      for(const t of it.terms){
+        if(t.length>=2 && low.includes(t)){ const s=t.length>=4?3:(t.length===3?2:1); if(s>score){score=s;hitTerm=t;} }
+      }
+      // 式の断片（∀ 〜 ∃ を含む 8 文字以上）が一致したら加点
+      const frag=(it.r.prenex||'').replace(/\s+/g,'');
+      if(frag.length>=12){
+        for(let i=0;i+12<=frag.length;i+=6){ if(low.replace(/\s+/g,'').includes(frag.slice(i,i+12))){score=Math.max(score,2);hitTerm=hitTerm||'式';break} }
+      }
+      if(score>0) hits.push({r:it.r,score,term:hitTerm});
+    }
+    hits.sort((a,b)=> b.score-a.score || (a.r.isCal?1:0)-(b.r.isCal?1:0));
+    out.push({line,hits:hits.slice(0,3)});
+  }
+  return out;
+}
+function riskOf(line,r){
+  const p=r.iv, t=T();
+  const claims=/独立|証明でき(ない|ません)|不能|不可能|unprovable|independent/i.test(line);
+  if(!claims) return {cls:'ok',msg:t.safe};
+  if(!p||r.kind==='none') return {cls:'flag',msg:t.risk};
+  if(r.kind==='upper') return {cls:'flag',msg:t.risk};
+  if(r.kind==='both'||r.kind==='exact') return {cls:'ok',msg:t.safe};
+  return {cls:'ok',msg:t.safe};
+}
+function renderChecker(){
+  const t=T();
+  const html=`
+    <h3 style="margin:0 0 6px;font:600 15px/1.5 'Hiragino Mincho ProN',serif">${esc(t.h_check)}</h3>
+    <p class="lead" style="margin:0 0 14px;color:var(--muted);font-size:12.5px">${esc(t.checkLead)}</p>
+    <textarea id="draft" placeholder="${esc(t.draftPh)}"></textarea>
+    <div class="row"><button class="act primary" id="run">${esc(t.run)}</button>
+      <button class="act" id="clr">${esc(t.clear)}</button><span id="cres" style="font-size:12px;color:var(--muted)"></span></div>
+    <div id="hits"></div>`;
+  document.getElementById('checker').innerHTML=html;
+  document.getElementById('run').onclick=runCheck;
+  document.getElementById('clr').onclick=()=>{document.getElementById('draft').value='';document.getElementById('hits').innerHTML='';document.getElementById('cres').textContent=''};
+}
+function runCheck(){
+  const t=T(), text=document.getElementById('draft').value;
+  const res=analyse(text);
+  const box=document.getElementById('hits');
+  const total=res.reduce((n,x)=>n+x.hits.length,0);
+  document.getElementById('cres').textContent=`${res.length} 文 / 候補 ${total} 件`;
+  if(!total){box.innerHTML=`<div class="empty">${esc(t.noHit)}</div>`;return}
+  box.innerHTML=res.filter(x=>x.hits.length).map(x=>`
+    <div style="margin:16px 0 6px;font-size:11px;color:var(--muted)">${esc(x.line.slice(0,110))}</div>
+    ${x.hits.map(h=>{
+      const rk=riskOf(x.line,h.r);
+      const sib=x.hits.filter(o=>o!==h && o.r.kind!==h.r.kind);
+      const cross=sib.length?`<div class="lbl" style="margin-top:6px">同じ文に ${sib.map(o=>`${o.r.id}（${esc(o.r.A)}）`).join('・')} も当たっている。区間が細かい方を採る。</div>`:'';
+      const why=interpretHTML(h.r).replace(/^<div class="[^"]*">/,'').replace(/<\/div>$/,'');
+      return `<div class="hit"><div class="lbl">${h.r.id} ・ ${esc(h.r.tier)} ・ ${esc(h.r.A)} ・ 一致「${esc(h.term||'')}」</div>
+        <div class="quote">${esc(x.line.slice(0,160))}</div>
+        <div class="who">${esc(h.r.name)}</div>
+        <div class="why">${why}</div>
+        <div class="${rk.cls}">${esc(rk.msg)}</div>${cross}</div>`;
+    }).join('')}`).join('');
+}
+
+/* ---------- 逆引きの描画 ---------- */
+function renderPresets(){
+  const el=document.getElementById('presets');
+  const allRows=[...all()];
+  el.innerHTML=`<h3>${esc(T().h_presets)}</h3>
+    <p class="lead">${esc(T().presetsLead)}</p>
+    <div class="grid">${PRESETS.map(p=>{
+      const n=allRows.filter(p.f).length;
+      return `<div class="pcard" data-p="${p.id}"><div class="t">${esc(p[L]||p.ja)}</div>
+        <div class="d">${esc(p.d[L]||p.d.ja)}</div><div class="c">${n} 件</div></div>`}).join('')}
+    </div><div id="presetout" style="margin-top:22px"></div>`;
+  el.querySelectorAll('.pcard').forEach(e=>e.onclick=()=>{
+    const p=PRESETS.find(x=>x.id===e.dataset.p);
+    const rows=all().filter(p.f);
+    document.getElementById('presetout').innerHTML=
+      `<div class="k">${esc(p[L]||p.ja)} — ${rows.length} 件</div>`+ (rows.length? rows.map(r=>
+        `<div class="hit" style="cursor:pointer" data-go="${r.id}"><div class="who">${r.id} ・ ${esc(r.name)}</div>
+         <div class="lbl">${esc(r.tier)} ・ ${esc(r.A)} ・ ${esc(T().kind[r.kind])}</div></div>`).join('')
+        : `<div class="empty">${esc(T().noHit)}</div>`);
+    document.querySelectorAll('[data-go]').forEach(g=>g.onclick=()=>{
+      state.view='list'; state.tab = String(g.dataset.go).match(/^[CN]/)?'cal':'t82';
+      state.tier=null; state.kind=null; state.q=''; document.getElementById('q').value='';
+      state.sel=g.dataset.go; render();
+    });
+  });
+}
+
+/* ---------- 画面切替 ---------- */
+function setView(v){
+  state.view=v;
+  document.getElementById('main-list').style.display=v==='list'?'grid':'none';
+  document.getElementById('main-presets').style.display=v==='presets'?'block':'none';
+  document.getElementById('main-check').style.display=v==='check'?'block':'none';
+  document.getElementById('bar').style.display=v==='list'?'flex':'none';
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.view===v));
+  if(v==='presets') renderPresets();
+  if(v==='check') renderChecker();
+}
+function render(){
+  const t=T();
+  document.getElementById('q').placeholder=t.q;
+  document.getElementById('nav-list').textContent=L==='ja'?'一覧':'List';
+  document.getElementById('nav-presets').textContent=t.h_presets;
+  document.getElementById('nav-check').textContent=t.h_check;
+  document.getElementById('apptitle').textContent=L==='ja'?'命題データベース':'Proposition Database';
+  document.getElementById('sub1').textContent=L==='ja'?`Forb-LT 一覧表 1.8（公開版）・82 命題 ＋ 校正表 10 行`:`Forb-LT table 1.8 · 82 propositions + 10 comparison rows`;
+  document.getElementById('sub2').textContent=L==='ja'?'値は文献の写し。新しい定理の主張ではない':'Values are transcriptions from the literature. No new theorem is claimed.';
+  document.getElementById('f1').textContent=L==='ja'?'検索':'search';
+  document.getElementById('f2').textContent=L==='ja'?'移動':'move';
+  document.getElementById('f3').textContent=L==='ja'?'引用をコピー':'copy citation';
+  document.getElementById('f4').textContent=L==='ja'?'解除':'reset';
+  document.getElementById('lang').textContent=L==='ja'?'EN':'日本語';
+  renderChips();
+  const rows=filtered();
+  if(!state.sel&&rows.length) state.sel=rows[0].id;
+  if(state.sel&&!rows.some(r=>String(r.id)===String(state.sel))) state.sel=rows.length?rows[0].id:null;
+  renderList(rows); renderDetail();
+  if(state.view==='presets') renderPresets();
+  if(state.view==='check'&&!document.getElementById('draft')) renderChecker();
+}
+document.getElementById('sha').textContent=DATA.sha256.slice(0,16);
+document.getElementById('lang').onclick=()=>{L=L==='ja'?'en':'ja';render()};
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>setView(b.dataset.view));
+document.getElementById('q').addEventListener('input',e=>{state.q=e.target.value;render()});
+document.addEventListener('keydown',e=>{
+  if(e.metaKey||e.ctrlKey) return;
+  const typing=document.activeElement.tagName==='TEXTAREA'||document.activeElement.id==='q';
+  if(e.key==='/'&&!typing){e.preventDefault();setView('list');document.getElementById('q').focus();return}
+  if(e.key==='Escape'){document.getElementById('q').value='';state.q='';state.tier=null;state.kind=null;render();return}
+  if(typing) return;
+  if(e.key==='c'){const b=document.getElementById('cp');if(b)b.click();return}
+  if(['ArrowDown','ArrowUp','j','k'].includes(e.key)){
+    const rows=filtered(); if(!rows.length) return; e.preventDefault();
+    const i=rows.findIndex(r=>String(r.id)===String(state.sel));
+    const n=(e.key==='ArrowDown'||e.key==='j')?Math.min(rows.length-1,i+1):Math.max(0,i-1);
+    state.sel=rows[n].id; render();
+    const s=document.querySelector('.item.sel'); if(s)s.scrollIntoView({block:'nearest'});
+  }
+});
+setView('list'); render();
+</script>
+</body>
+</html>
